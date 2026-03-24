@@ -1,0 +1,892 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover"/>
+  <title>TAREAS JC – Quick</title>
+  <meta name="apple-mobile-web-app-capable" content="yes"/>
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent"/>
+  <meta name="apple-mobile-web-app-title" content="TAREAS JC"/>
+  <meta name="mobile-web-app-capable" content="yes"/>
+  <meta name="theme-color" content="#FFD100"/>
+  <link rel="apple-touch-icon" id="apple-touch-icon"/>
+  <link rel="icon" id="favicon" type="image/png"/>
+  <link rel="manifest" id="pwa-manifest"/>
+  <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-database-compat.js"></script>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    :root {
+      --yellow:#FFD100; --black:#111111; --white:#FFFFFF;
+      --gray-bg:#F5F5F5; --gray-mid:#E0E0E0; --gray-txt:#666666;
+      --alta:#E63946; --media:#F77F00; --baja:#2DC653;
+      --radius:14px; --shadow:0 3px 14px rgba(0,0,0,.10);
+    }
+    body { font-family:'Segoe UI',system-ui,sans-serif; background:var(--gray-bg); min-height:100vh; color:var(--black); }
+
+    /* INSTALL BANNER */
+    .install-banner { display:none; position:fixed; bottom:20px; left:50%; transform:translateX(-50%); width:min(420px,92vw); background:var(--black); border-radius:18px; padding:16px 18px; box-shadow:0 8px 30px rgba(0,0,0,.35); z-index:999; }
+    .install-banner.show { display:flex; gap:12px; align-items:flex-start; }
+    .ib-icon{font-size:2rem;flex-shrink:0} .ib-body{flex:1} .ib-title{font-size:.92rem;font-weight:800;color:var(--yellow);margin-bottom:4px} .ib-steps{font-size:.78rem;color:#CCC;line-height:1.55} .ib-steps b{color:var(--yellow)} .ib-close{background:none;border:none;color:#666;font-size:1.1rem;cursor:pointer;flex-shrink:0}
+
+    /* SYNC BAR */
+    .sync-bar { background:var(--black); padding:6px 16px; display:flex; align-items:center; justify-content:space-between; font-size:.75rem; font-weight:700; min-height:32px; }
+    .sync-indicator { display:flex; align-items:center; gap:6px; }
+    .sync-dot { width:8px; height:8px; border-radius:50%; background:#444; flex-shrink:0; }
+    .sync-dot.synced  { background:#2DC653; box-shadow:0 0 6px #2DC653; }
+    .sync-dot.syncing { background:var(--yellow); animation:pulse .8s infinite; }
+    .sync-dot.error   { background:var(--alta); }
+    @keyframes pulse { 0%,100%{opacity:1} 50%{opacity:.3} }
+    .sync-label { color:#aaa; }
+    .sync-label.synced  { color:#2DC653; }
+    .sync-label.syncing { color:var(--yellow); }
+    .sync-label.error   { color:var(--alta); }
+    .btn-sync-setup { background:var(--yellow); color:var(--black); border:none; border-radius:20px; padding:3px 12px; font-size:.72rem; font-weight:800; cursor:pointer; }
+
+    /* HERO */
+    .hero { background:var(--yellow); padding:calc(22px + env(safe-area-inset-top)) 20px 24px; text-align:center; position:relative; overflow:hidden; }
+    .hero::before,.hero::after { content:'';position:absolute;border-radius:50%;background:rgba(0,0,0,.06); }
+    .hero::before{width:220px;height:220px;top:-80px;left:-60px} .hero::after{width:160px;height:160px;bottom:-70px;right:-40px}
+    .hero-top { display:flex; justify-content:flex-end; margin-bottom:8px; position:relative; z-index:2; }
+    .btn-settings { background:rgba(0,0,0,.12); border:none; border-radius:10px; padding:6px 10px; cursor:pointer; font-size:1.1rem; }
+    .logo-wrap { display:inline-flex; flex-direction:column; align-items:center; gap:8px; position:relative; z-index:1; }
+    .logo-icon { width:72px; height:72px; filter:drop-shadow(0 4px 8px rgba(0,0,0,.25)); }
+    .logo-title { font-size:1.9rem; font-weight:900; color:var(--black); letter-spacing:-1px; }
+    .logo-sub   { font-size:.72rem; font-weight:700; letter-spacing:3px; text-transform:uppercase; color:var(--black); opacity:.6; }
+    .version-badge { display:inline-flex; align-items:center; gap:5px; background:var(--black); color:var(--yellow); font-size:.68rem; font-weight:800; padding:3px 12px; border-radius:20px; cursor:pointer; }
+    .hero-date { margin-top:8px; font-size:.82rem; font-weight:600; color:var(--black); opacity:.55; position:relative; z-index:1; }
+
+    /* OVERLAYS */
+    .overlay { display:none; position:fixed; inset:0; background:rgba(0,0,0,.5); z-index:200; align-items:center; justify-content:center; }
+    .overlay.open { display:flex; }
+    .modal-box { background:white; border-radius:18px; width:min(500px,95vw); max-height:85vh; overflow:hidden; box-shadow:0 12px 40px rgba(0,0,0,.22); display:flex; flex-direction:column; }
+    .mhead { background:var(--black); padding:16px 20px; display:flex; justify-content:space-between; align-items:center; flex-shrink:0; }
+    .mhead h3 { font-size:.98rem; font-weight:800; color:var(--yellow); text-transform:uppercase; letter-spacing:1px; }
+    .mclose { background:none; border:none; font-size:1.2rem; color:#888; cursor:pointer; }
+    .mclose:hover { color:var(--yellow); }
+    .mbody { padding:20px; overflow-y:auto; }
+
+    /* SYNC MODAL */
+    .sync-step { display:flex; gap:14px; margin-bottom:20px; align-items:flex-start; }
+    .sync-step-num { width:30px; height:30px; border-radius:50%; background:var(--yellow); color:var(--black); font-weight:900; font-size:.85rem; display:flex; align-items:center; justify-content:center; flex-shrink:0; border:2px solid var(--black); }
+    .sync-step-body h4 { font-size:.88rem; font-weight:800; margin-bottom:4px; }
+    .sync-step-body p  { font-size:.8rem; color:var(--gray-txt); line-height:1.5; }
+    .sync-step-body a  { color:#4361EE; font-weight:700; }
+    .sync-step-body code { background:#f5f5f5; padding:2px 6px; border-radius:5px; font-size:.78rem; color:#E63946; font-weight:700; }
+    .sync-divider { height:1px; background:var(--gray-mid); margin:18px 0; }
+    .sf-label { display:block; font-size:.74rem; font-weight:800; color:var(--gray-txt); margin-bottom:5px; text-transform:uppercase; letter-spacing:.5px; }
+    .sf-input { width:100%; padding:9px 13px; border:2px solid var(--gray-mid); border-radius:10px; font-size:.85rem; font-family:monospace; outline:none; margin-bottom:12px; transition:border-color .2s; }
+    .sf-input:focus { border-color:var(--yellow); box-shadow:0 0 0 3px rgba(255,209,0,.25); }
+    .btn-connect { width:100%; padding:12px; background:var(--yellow); color:var(--black); border:3px solid var(--black); border-radius:10px; font-size:.95rem; font-weight:900; cursor:pointer; text-transform:uppercase; box-shadow:3px 3px 0 var(--black); transition:all .15s; }
+    .btn-connect:hover { box-shadow:4px 4px 0 var(--black); transform:translate(-1px,-1px); }
+    .btn-disconnect { width:100%; padding:10px; background:#fff0f0; color:var(--alta); border:2px solid var(--alta); border-radius:10px; font-size:.85rem; font-weight:800; cursor:pointer; margin-top:10px; }
+    .btn-disconnect:hover { background:var(--alta); color:white; }
+    .connect-status { text-align:center; padding:10px; border-radius:10px; font-size:.82rem; font-weight:700; margin-top:10px; display:none; }
+    .connect-status.ok  { background:#eafbee; color:var(--baja); display:block; }
+    .connect-status.err { background:#fff0f0; color:var(--alta); display:block; }
+    .connected-box { text-align:center; padding:16px 0; }
+    .connected-box .big { font-size:2.5rem; margin-bottom:8px; }
+    .connected-box .title { font-size:1rem; font-weight:800; color:var(--baja); }
+    .connected-box .sub  { font-size:.82rem; color:var(--gray-txt); margin-top:6px; }
+    .connected-url { margin-top:12px; font-size:.74rem; color:#aaa; font-family:monospace; background:#f5f5f5; padding:8px 12px; border-radius:8px; word-break:break-all; }
+
+    /* CHANGELOG */
+    .cl-version { margin-bottom:20px; }
+    .cl-ver-tag { display:inline-flex; align-items:center; background:var(--yellow); color:var(--black); font-size:.76rem; font-weight:900; padding:3px 12px; border-radius:20px; border:2px solid var(--black); margin-bottom:8px; }
+    .cl-ver-tag.current { background:var(--black); color:var(--yellow); }
+    .cl-ver-date { font-size:.72rem; color:#aaa; margin-left:6px; font-weight:600; }
+    .cl-items { list-style:none; }
+    .cl-items li { font-size:.82rem; color:#444; padding:5px 0; border-bottom:1px solid #f0f0f0; display:flex; gap:8px; }
+    .cl-items li:last-child { border-bottom:none; }
+    .cl-items li::before { content:'→'; color:var(--yellow); font-weight:900; flex-shrink:0; }
+
+    /* MAIN */
+    .main { max-width:760px; margin:0 auto; padding:22px 16px 80px; }
+
+    /* DASHBOARD */
+    .dashboard { display:grid; grid-template-columns:repeat(5,1fr); gap:10px; margin-bottom:22px; }
+    @media(max-width:560px){ .dashboard{grid-template-columns:repeat(3,1fr)} }
+    .dash-card { background:var(--white); border-radius:var(--radius); padding:13px 10px; text-align:center; box-shadow:var(--shadow); border-bottom:4px solid transparent; transition:transform .15s; }
+    .dash-card:hover { transform:translateY(-2px); }
+    .dash-card .num { font-size:1.7rem; font-weight:900; line-height:1; }
+    .dash-card .lbl { font-size:.66rem; color:var(--gray-txt); margin-top:5px; text-transform:uppercase; letter-spacing:.5px; font-weight:600; }
+    .dc-total{border-color:var(--yellow)} .dc-total .num{color:var(--black)}
+    .dc-pend{border-color:#F77F00}       .dc-pend  .num{color:#F77F00}
+    .dc-hoy{border-color:#7B2D8B}        .dc-hoy   .num{color:#7B2D8B}
+    .dc-venc{border-color:var(--alta)}   .dc-venc  .num{color:var(--alta)}
+    .dc-done{border-color:var(--baja)}   .dc-done  .num{color:var(--baja)}
+
+    .progress-card { background:var(--white); border-radius:var(--radius); padding:13px 18px; box-shadow:var(--shadow); margin-bottom:22px; }
+    .prog-header { display:flex; justify-content:space-between; font-size:.82rem; font-weight:700; color:var(--gray-txt); margin-bottom:8px; }
+    .prog-bg { background:var(--gray-mid); border-radius:20px; height:12px; overflow:hidden; }
+    .prog-fill { height:100%; border-radius:20px; background:linear-gradient(90deg,var(--yellow),#FFB300); border:2px solid rgba(0,0,0,.1); transition:width .45s ease; }
+
+    /* FORM */
+    .add-box { background:var(--white); border-radius:var(--radius); box-shadow:var(--shadow); margin-bottom:20px; overflow:hidden; }
+    .add-box-header { background:var(--black); padding:11px 18px; display:flex; align-items:center; gap:8px; }
+    .add-box-header h2 { font-size:.88rem; font-weight:700; color:var(--yellow); text-transform:uppercase; letter-spacing:1px; }
+    .add-box-body { padding:16px; }
+    .form-grid { display:grid; grid-template-columns:1fr 1fr; gap:10px; }
+    @media(max-width:520px){ .form-grid{grid-template-columns:1fr} }
+    .form-grid .span2 { grid-column:span 2; }
+    @media(max-width:520px){ .form-grid .span2{grid-column:span 1} }
+    .form-grid input,.form-grid select,.form-grid textarea { width:100%; padding:9px 13px; border:2px solid var(--gray-mid); border-radius:10px; font-size:.9rem; font-family:inherit; background:white; outline:none; transition:border-color .2s; color:var(--black); }
+    .form-grid input:focus,.form-grid select:focus,.form-grid textarea:focus { border-color:var(--yellow); box-shadow:0 0 0 3px rgba(255,209,0,.25); }
+    .form-grid textarea { resize:none; height:56px; }
+    .field-lbl { font-size:.7rem; font-weight:700; color:var(--gray-txt); margin-bottom:4px; display:block; text-transform:uppercase; letter-spacing:.5px; }
+    .gcal-block { display:none; grid-column:span 2; background:#FFFBEA; border:2px dashed var(--yellow); border-radius:10px; padding:13px; }
+    .gcal-block.show { display:grid; grid-template-columns:1fr 1fr; gap:10px; }
+    @media(max-width:520px){ .gcal-block.show{grid-template-columns:1fr} }
+    .gcal-block .gcal-title { grid-column:span 2; font-size:.76rem; font-weight:800; color:var(--black); display:flex; align-items:center; gap:6px; text-transform:uppercase; }
+    .gcal-block label { font-size:.71rem; font-weight:700; color:var(--gray-txt); margin-bottom:4px; display:block; }
+    .gcal-block input { border:2px solid #E0D000 !important; }
+    .gcal-block input:focus { border-color:var(--yellow) !important; box-shadow:0 0 0 3px rgba(255,209,0,.25) !important; }
+    .btn-add { width:100%; padding:11px; background:var(--yellow); color:var(--black); border:3px solid var(--black); border-radius:10px; font-size:.92rem; font-weight:900; cursor:pointer; text-transform:uppercase; box-shadow:3px 3px 0 var(--black); transition:all .15s; }
+    .btn-add:hover  { background:#FFE033; box-shadow:4px 4px 0 var(--black); transform:translate(-1px,-1px); }
+    .btn-add:active { box-shadow:1px 1px 0 var(--black); transform:translate(2px,2px); }
+
+    /* FILTERS */
+    .filters { display:flex; flex-wrap:wrap; gap:7px; margin-bottom:13px; }
+    .fbtn { padding:6px 14px; border-radius:20px; border:2px solid var(--gray-mid); background:var(--white); font-size:.78rem; font-weight:700; cursor:pointer; transition:all .15s; color:var(--black); }
+    .fbtn:hover { border-color:var(--black); background:var(--black); color:var(--yellow); }
+    .fbtn.active { background:var(--yellow); border-color:var(--black); color:var(--black); box-shadow:2px 2px 0 var(--black); }
+    .actions-row { display:flex; justify-content:flex-end; margin-bottom:10px; }
+    .btn-ghost { background:none; border:none; color:#BBB; font-size:.76rem; font-weight:600; cursor:pointer; padding:4px 8px; border-radius:6px; }
+    .btn-ghost:hover { color:var(--alta); }
+
+    /* TASKS */
+    .section-lbl { font-size:.7rem; font-weight:800; text-transform:uppercase; letter-spacing:1.5px; color:#AAA; margin:16px 0 8px 2px; display:flex; align-items:center; gap:6px; }
+    .section-lbl::after { content:''; flex:1; height:2px; background:var(--gray-mid); border-radius:2px; }
+    .task-item { background:var(--white); border-radius:var(--radius); padding:13px 15px; margin-bottom:9px; box-shadow:var(--shadow); display:grid; grid-template-columns:auto 1fr auto; gap:12px; align-items:start; animation:slideIn .22s ease; border-left:5px solid transparent; transition:transform .15s,box-shadow .15s; }
+    .task-item:hover { transform:translateY(-1px); box-shadow:0 6px 20px rgba(0,0,0,.12); }
+    @keyframes slideIn { from{opacity:0;transform:translateY(-6px)} to{opacity:1;transform:translateY(0)} }
+    .task-item.overdue   { border-left-color:var(--alta); }
+    .task-item.due-today { border-left-color:var(--media); }
+    .task-item.done-item { opacity:.45; border-left-color:var(--baja); }
+    .task-check { width:24px; height:24px; border-radius:50%; border:3px solid var(--gray-mid); cursor:pointer; display:flex; align-items:center; justify-content:center; transition:all .18s; margin-top:1px; flex-shrink:0; }
+    .task-check.checked { background:var(--yellow); border-color:var(--black); }
+    .task-check.checked::after { content:'✓'; font-size:12px; font-weight:900; color:var(--black); }
+    .task-check:not(.checked):hover { border-color:var(--yellow); background:#FFFBEA; }
+    .task-title { font-size:.95rem; font-weight:700; color:var(--black); line-height:1.35; }
+    .done-item .task-title { text-decoration:line-through; color:#BBB; }
+    .task-notes { font-size:.8rem; color:var(--gray-txt); margin-top:3px; }
+    .task-tags { display:flex; flex-wrap:wrap; gap:6px; margin-top:7px; align-items:center; }
+    .tag { font-size:.67rem; padding:2px 9px; border-radius:20px; font-weight:800; text-transform:uppercase; letter-spacing:.5px; border:1.5px solid; }
+    .tag-personal    { background:#FFF0F6; color:#D63384; border-color:#D63384; }
+    .tag-profesional { background:#EFF3FF; color:#4361EE; border-color:#4361EE; }
+    .tag-reuniones   { background:var(--yellow); color:var(--black); border-color:var(--black); }
+    .pri-badge { font-size:.67rem; font-weight:800; display:flex; align-items:center; gap:4px; text-transform:uppercase; }
+    .dot{width:7px;height:7px;border-radius:50%}
+    .dot-alta{background:var(--alta)} .dot-media{background:var(--media)} .dot-baja{background:var(--baja)}
+    .pri-alta-c{color:var(--alta)} .pri-media-c{color:var(--media)} .pri-baja-c{color:var(--baja)}
+    .status-badge { font-size:.67rem; font-weight:800; padding:2px 8px; border-radius:20px; text-transform:uppercase; }
+    .badge-overdue { background:#FFF0F0; color:var(--alta); border:1.5px solid var(--alta); }
+    .badge-today   { background:#FFF8EE; color:var(--media); border:1.5px solid var(--media); }
+    .date-row { display:flex; flex-wrap:wrap; gap:10px; margin-top:7px; }
+    .date-chip { font-size:.7rem; color:#AAA; display:flex; align-items:center; gap:4px; font-weight:600; }
+    .date-chip.ov{color:var(--alta);font-weight:800} .date-chip.td{color:var(--media);font-weight:800} .date-chip.ok{color:var(--baja);font-weight:800}
+    .btn-gcal { font-size:.7rem; padding:4px 10px; background:var(--yellow); color:var(--black); border:2px solid var(--black); border-radius:20px; cursor:pointer; font-weight:800; text-decoration:none; display:inline-block; margin-top:7px; transition:all .15s; box-shadow:2px 2px 0 var(--black); }
+    .btn-gcal:hover { background:var(--black); color:var(--yellow); box-shadow:none; transform:translate(2px,2px); }
+    .task-actions { display:flex; flex-direction:column; gap:5px; align-items:flex-end; }
+    .btn-icon { background:none; border:none; cursor:pointer; font-size:.95rem; padding:5px 6px; border-radius:8px; color:#CCC; transition:all .15s; line-height:1; }
+    .btn-icon:hover { background:var(--gray-bg); color:var(--black); }
+    .btn-del:hover  { background:#FFF0F0 !important; color:var(--alta) !important; }
+    .empty { text-align:center; padding:50px 20px; color:#CCC; }
+    .empty .ico{font-size:3rem;margin-bottom:12px} .empty p{font-size:.92rem;font-weight:600}
+
+    /* EDIT MODAL */
+    .edit-grid { display:grid; grid-template-columns:1fr 1fr; gap:10px; }
+    .edit-field { margin-bottom:12px; }
+    .edit-field label { display:block; font-size:.74rem; font-weight:800; color:var(--gray-txt); margin-bottom:5px; text-transform:uppercase; letter-spacing:.5px; }
+    .edit-field input,.edit-field select,.edit-field textarea { width:100%; padding:9px 13px; border:2px solid var(--gray-mid); border-radius:10px; font-size:.9rem; font-family:inherit; outline:none; }
+    .edit-field input:focus,.edit-field select:focus,.edit-field textarea:focus { border-color:var(--yellow); box-shadow:0 0 0 3px rgba(255,209,0,.25); }
+    .edit-field textarea { resize:none; height:68px; }
+    .modal-btns { display:flex; gap:10px; justify-content:flex-end; margin-top:16px; }
+    .btn-save { padding:9px 22px; background:var(--yellow); color:var(--black); border:3px solid var(--black); border-radius:10px; font-weight:900; cursor:pointer; font-size:.88rem; box-shadow:2px 2px 0 var(--black); text-transform:uppercase; transition:all .15s; }
+    .btn-save:hover { box-shadow:none; transform:translate(2px,2px); }
+    .btn-cancel { padding:9px 18px; background:#F5F5F5; color:#555; border:2px solid var(--gray-mid); border-radius:10px; font-weight:700; cursor:pointer; font-size:.88rem; }
+
+    .footer { text-align:center; padding:16px 16px 40px; color:#CCC; font-size:.7rem; font-weight:600; }
+    .footer span{color:var(--yellow)}
+
+    /* CATEGORY TYPE SELECTOR */
+    .cat-section { grid-column:span 2; }
+    @media(max-width:520px){ .cat-section{grid-column:span 1} }
+    .cat-type-group { display:flex; gap:8px; margin-top:5px; }
+    .cat-type-btn {
+      flex:1; padding:10px 6px; border-radius:10px; border:2px solid;
+      font-size:.82rem; font-weight:800; cursor:pointer; transition:all .2s;
+      display:flex; align-items:center; justify-content:center; gap:5px;
+      background:transparent; line-height:1.2; text-align:center;
+    }
+    .cat-type-btn:hover { transform:translateY(-1px); filter:brightness(1.05); }
+    .cat-type-btn[data-cat="profesional"] { border-color:#4361EE; color:#4361EE; }
+    .cat-type-btn[data-cat="profesional"].active { background:#4361EE; color:white; box-shadow:0 3px 10px rgba(67,97,238,.35); }
+    .cat-type-btn[data-cat="reuniones"]   { border-color:#7B2D8B; color:#7B2D8B; }
+    .cat-type-btn[data-cat="reuniones"].active   { background:#7B2D8B; color:white; box-shadow:0 3px 10px rgba(123,45,139,.35); }
+    .cat-type-btn[data-cat="personal"]    { border-color:#2DC653; color:#2DC653; }
+    .cat-type-btn[data-cat="personal"].active    { background:#2DC653; color:white; box-shadow:0 3px 10px rgba(45,198,83,.35); }
+    /* Smart-detect hint */
+    .cat-hint { font-size:.67rem; font-weight:700; margin-top:5px; min-height:14px; transition:opacity .3s; opacity:0; }
+    .cat-hint.show { opacity:1; }
+    .cat-hint-profesional { color:#4361EE; }
+    .cat-hint-reuniones   { color:#7B2D8B; }
+    .cat-hint-personal    { color:#2DC653; }
+  </style>
+</head>
+<body>
+
+<div class="sync-bar">
+  <div class="sync-indicator">
+    <div class="sync-dot" id="sync-dot"></div>
+    <span class="sync-label" id="sync-label">Sin sincronización</span>
+  </div>
+  <button class="btn-sync-setup" onclick="openSync()">⚙️ Configurar Sync</button>
+</div>
+
+<header class="hero">
+  <div class="hero-top">
+    <button class="btn-settings" onclick="openSync()">⚙️</button>
+  </div>
+  <div class="logo-wrap">
+    <svg class="logo-icon" viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
+      <rect x="2" y="2" width="96" height="96" rx="22" fill="#111111"/>
+      <rect x="8" y="8" width="84" height="84" rx="18" fill="#FFD100"/>
+      <rect x="18" y="22" width="64" height="12" rx="6" fill="#111111"/>
+      <rect x="42" y="28" width="16" height="42" rx="6" fill="#111111"/>
+      <circle cx="78" cy="72" r="12" fill="#111111"/>
+      <polyline points="72,72 77,78 85,65" fill="none" stroke="#FFD100" stroke-width="3.5" stroke-linecap="round" stroke-linejoin="round"/>
+      <rect x="8" y="8" width="84" height="84" rx="18" fill="none" stroke="white" stroke-width="3" opacity="0.25"/>
+    </svg>
+    <div>
+      <div class="logo-title">TAREAS JC</div>
+      <div class="logo-sub">powered by Quick</div>
+    </div>
+    <div class="version-badge" onclick="openCL()">⚡ v1.3.0 · Ver cambios</div>
+  </div>
+  <div class="hero-date" id="fecha-hoy"></div>
+</header>
+
+<div class="main">
+  <div class="dashboard">
+    <div class="dash-card dc-total"><div class="num" id="d-total">0</div><div class="lbl">Total</div></div>
+    <div class="dash-card dc-pend"> <div class="num" id="d-pend">0</div> <div class="lbl">Pendientes</div></div>
+    <div class="dash-card dc-hoy">  <div class="num" id="d-hoy">0</div>  <div class="lbl">Vencen hoy</div></div>
+    <div class="dash-card dc-venc"> <div class="num" id="d-venc">0</div> <div class="lbl">Vencidas</div></div>
+    <div class="dash-card dc-done"> <div class="num" id="d-done">0</div> <div class="lbl">Completadas</div></div>
+  </div>
+  <div class="progress-card">
+    <div class="prog-header"><span>Progreso general</span><span id="pct-lbl" style="color:var(--black);font-weight:900">0%</span></div>
+    <div class="prog-bg"><div class="prog-fill" id="prog-fill" style="width:0%"></div></div>
+  </div>
+
+  <div class="add-box">
+    <div class="add-box-header">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#FFD100" stroke-width="3" stroke-linecap="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+      <h2>Nueva Tarea</h2>
+    </div>
+    <div class="add-box-body">
+      <div class="form-grid">
+        <input class="span2" type="text" id="inp-title" placeholder="¿Qué necesitas hacer?" autocomplete="off"/>
+        <!-- Category type selector -->
+        <div class="cat-section">
+          <span class="field-lbl">Tipo de tarea</span>
+          <div class="cat-type-group">
+            <button type="button" class="cat-type-btn active" data-cat="profesional" onclick="selectCat('profesional',this)">💼 Profesional</button>
+            <button type="button" class="cat-type-btn"        data-cat="reuniones"   onclick="selectCat('reuniones',this)">📆 Reunión</button>
+            <button type="button" class="cat-type-btn"        data-cat="personal"    onclick="selectCat('personal',this)">🙋🏻‍♂️ Personal</button>
+          </div>
+          <div class="cat-hint" id="cat-hint"></div>
+        </div>
+        <input type="text" id="inp-notes" placeholder="Notas (opcional)"/>
+        <select id="inp-pri">
+          <option value="alta">🔴 Alta</option>
+          <option value="media" selected>🟠 Media</option>
+          <option value="baja">🟢 Baja</option>
+        </select>
+        <div>
+          <span class="field-lbl">Fecha de vencimiento</span>
+          <input type="date" id="inp-due"/>
+        </div>
+        <div style="display:flex;align-items:flex-end">
+          <button class="btn-add" onclick="addTask()">➕ Agregar</button>
+        </div>
+        <div class="gcal-block" id="gcal-block">
+          <div class="gcal-title">📅 Google Calendar <span style="font-weight:400;color:#AAA;text-transform:none;font-size:.7rem">(opcional)</span></div>
+          <div style="grid-column:span 2"><label>📆 Fecha de la reunión</label><input type="date" id="gcal-date" onchange="syncDueFromGcal()"/></div>
+          <div><label>🕐 Hora inicio</label><input type="time" id="gcal-s" value="09:00"/></div>
+          <div><label>🕑 Hora fin</label>  <input type="time" id="gcal-e" value="10:00"/></div>
+          <div><label>📍 Ubicación / Link</label><input type="text" id="gcal-loc" placeholder="meet.google.com/..."/></div>
+          <div><label>📝 Descripción</label><input type="text" id="gcal-desc" placeholder="Temas a tratar…"/></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="filters">
+    <button class="fbtn active" onclick="setFilter('todas',this)">Todas</button>
+    <button class="fbtn" onclick="setFilter('personal',this)">🙋 Personal</button>
+    <button class="fbtn" onclick="setFilter('profesional',this)">💼 Profesional</button>
+    <button class="fbtn" onclick="setFilter('reuniones',this)">📅 Reuniones</button>
+    <button class="fbtn" onclick="setFilter('pendientes',this)">⏳ Pendientes</button>
+    <button class="fbtn" onclick="setFilter('vencidas',this)">🚨 Vencidas</button>
+    <button class="fbtn" onclick="setFilter('completadas',this)">✅ Completadas</button>
+  </div>
+  <div class="actions-row">
+    <button class="btn-ghost" onclick="clearDone()">🗑 Eliminar completadas</button>
+  </div>
+  <div id="tasks-wrap"></div>
+</div>
+
+<footer class="footer">TAREAS JC &nbsp;·&nbsp; <span>v1.3.0</span> &nbsp;·&nbsp; powered by Quick</footer>
+
+<!-- SYNC MODAL -->
+<div class="overlay" id="sync-overlay">
+  <div class="modal-box">
+    <div class="mhead"><h3>🔄 Sincronización en tiempo real</h3><button class="mclose" onclick="closeSync()">✕</button></div>
+    <div class="mbody">
+      <div id="sync-connected-view" style="display:none">
+        <div class="connected-box">
+          <div class="big">🟢</div>
+          <div class="title">¡Sincronización activa!</div>
+          <div class="sub">Tus tareas se sincronizan en tiempo real entre todos tus dispositivos.</div>
+          <div class="connected-url" id="connected-db-url"></div>
+        </div>
+        <button class="btn-disconnect" onclick="disconnectFirebase()">🔌 Desconectar Firebase</button>
+      </div>
+      <div id="sync-setup-view">
+        <div class="sync-step"><div class="sync-step-num">1</div><div class="sync-step-body"><h4>Crea tu proyecto en Firebase</h4><p>Ve a <a href="https://console.firebase.google.com" target="_blank">console.firebase.google.com</a> con tu cuenta Google → <strong>"Crear un proyecto"</strong> → nómbralo → continúa.</p></div></div>
+        <div class="sync-step"><div class="sync-step-num">2</div><div class="sync-step-body"><h4>Activa Realtime Database</h4><p>Menú izquierdo → <strong>"Realtime Database"</strong> → <strong>"Crear base de datos"</strong> → ubicación <code>us-central1</code> → <strong>"Modo de prueba"</strong> → Habilitar.</p></div></div>
+        <div class="sync-step"><div class="sync-step-num">3</div><div class="sync-step-body"><h4>Copia tu Database URL</h4><p>Se ve así: <code>https://tu-proyecto-default-rtdb.firebaseio.com/</code></p></div></div>
+        <div class="sync-step"><div class="sync-step-num">4</div><div class="sync-step-body"><h4>Obtén tu API Key</h4><p>⚙️ Configuración → General → <strong>"+ Agregar app"</strong> → ícono Web <code>&lt;/&gt;</code> → Registrar → copia el valor de <code>apiKey</code>.</p></div></div>
+        <div class="sync-divider"></div>
+        <label class="sf-label">Database URL</label>
+        <input class="sf-input" type="url" id="fb-url" placeholder="https://tu-proyecto-default-rtdb.firebaseio.com/"/>
+        <label class="sf-label">API Key</label>
+        <input class="sf-input" type="text" id="fb-key" placeholder="AIzaSy..."/>
+        <button class="btn-connect" onclick="connectFirebase()">🔗 Conectar y Sincronizar</button>
+        <div class="connect-status" id="connect-status"></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- CHANGELOG MODAL -->
+<div class="overlay" id="cl-overlay">
+  <div class="modal-box">
+    <div class="mhead"><h3>⚡ Historial de versiones</h3><button class="mclose" onclick="closeCL()">✕</button></div>
+    <div class="mbody">
+      <div class="cl-version">
+        <div><span class="cl-ver-tag current">v1.3.0 – Actual</span><span class="cl-ver-date">Mar 2026</span></div>
+        <ul class="cl-items">
+          <li>Nueva selección de tipo de tarea con botones visuales: 💼 Profesional, 📆 Reunión, 🙋🏻‍♂️ Personal</li>
+          <li>Detección automática de categoría por palabras clave al escribir el título</li>
+          <li>Prioridad inteligente: Profesional → Media, Personal → Baja, Reunión → Alta</li>
+          <li>Reuniones sugieren automáticamente la fecha de hoy</li>
+          <li>Colores por categoría: azul (Profesional), morado (Reunión), verde (Personal)</li>
+        </ul>
+      </div>
+      <div class="cl-version">
+        <div><span class="cl-ver-tag">v1.2.1</span><span class="cl-ver-date">Mar 2026</span></div>
+        <ul class="cl-items">
+          <li>Corrección: tareas borradas ya no reaparecen al reabrir la app</li>
+          <li>Corrección: se puede borrar la última tarea sin que vuelvan las tareas de ejemplo</li>
+          <li>Firebase es ahora la fuente única de verdad cuando está conectado</li>
+          <li>Las tareas de ejemplo solo se cargan en el primer uso, nunca más</li>
+        </ul>
+      </div>
+      <div class="cl-version">
+        <div><span class="cl-ver-tag">v1.2.0</span><span class="cl-ver-date">Mar 2026</span></div>
+        <ul class="cl-items">
+          <li>Sincronización en tiempo real entre iPhone y PC con Firebase</li>
+          <li>Barra de estado de sincronización en tiempo real</li>
+          <li>Panel de configuración Firebase con guía paso a paso</li>
+        </ul>
+      </div>
+      <div class="cl-version">
+        <div><span class="cl-ver-tag">v1.1.0</span><span class="cl-ver-date">Mar 2026</span></div>
+        <ul class="cl-items">
+          <li>Calendario de fecha en formulario de reuniones</li>
+          <li>Sistema de versioning con historial de cambios</li>
+        </ul>
+      </div>
+      <div class="cl-version">
+        <div><span class="cl-ver-tag">v1.0.0</span><span class="cl-ver-date">Mar 2026</span></div>
+        <ul class="cl-items">
+          <li>Lanzamiento inicial – Personal, Profesional y Reuniones</li>
+          <li>Dashboard, fechas, Google Calendar, PWA, branding Quick</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- EDIT MODAL -->
+<div class="overlay" id="edit-overlay">
+  <div class="modal-box">
+    <div class="mhead"><h3>✏️ Editar Tarea</h3><button class="mclose" onclick="closeEdit()">✕</button></div>
+    <div class="mbody">
+      <input type="hidden" id="edit-id"/>
+      <div class="edit-field"><label>Título</label><input type="text" id="edit-title"/></div>
+      <div class="edit-field"><label>Notas</label><textarea id="edit-notes"></textarea></div>
+      <div class="edit-grid">
+        <div class="edit-field"><label>Categoría</label>
+          <select id="edit-cat">
+            <option value="personal">🙋 Personal</option>
+            <option value="profesional">💼 Profesional</option>
+            <option value="reuniones">📅 Reunión</option>
+          </select>
+        </div>
+        <div class="edit-field"><label>Prioridad</label>
+          <select id="edit-pri">
+            <option value="alta">🔴 Alta</option>
+            <option value="media">🟠 Media</option>
+            <option value="baja">🟢 Baja</option>
+          </select>
+        </div>
+      </div>
+      <div class="edit-field"><label>Fecha de vencimiento</label><input type="date" id="edit-due"/></div>
+      <div class="modal-btns">
+        <button class="btn-cancel" onclick="closeEdit()">Cancelar</button>
+        <button class="btn-save" onclick="saveEdit()">Guardar</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="install-banner" id="install-banner">
+  <div class="ib-icon">📲</div>
+  <div class="ib-body">
+    <div class="ib-title">Instala TAREAS JC en tu iPhone</div>
+    <div class="ib-steps">1. Toca <b>Compartir ↑</b> en Safari<br>2. <b>"Agregar a pantalla de inicio"</b><br>3. Toca <b>Agregar</b></div>
+  </div>
+  <button class="ib-close" onclick="dismissBanner()">✕</button>
+</div>
+
+<script>
+const APP_VERSION  = '1.3.0';
+const KEY          = 'tareasJC_v4';
+const FB_CFG_KEY   = 'tareasJC_fbConfig';
+const FIRST_RUN    = 'tareasJC_firstRun'; // ← FIX BUG 1
+
+let tasks       = [];
+let filter      = 'todas';
+let fbApp       = null, fbDb = null, fbRef = null;
+let fbReady     = false; // ← FIX BUG 2: Firebase ya hizo su primera carga
+let selectedCat = 'profesional'; // ← v1.3.0: categoría activa en el formulario
+
+const TODAY = fmtDate(new Date());
+
+function fmtDate(d){ return d.toISOString().split('T')[0]; }
+function advance(n){ const d=new Date(); d.setDate(d.getDate()+n); return fmtDate(d); }
+function esc(s){ return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;'); }
+function disp(s){
+  if(!s) return '—';
+  const[y,m,d]=s.split('-');
+  const M=['ene','feb','mar','abr','may','jun','jul','ago','sep','oct','nov','dic'];
+  return `${+d} ${M[+m-1]} ${y}`;
+}
+
+/* ── SYNC STATUS ── */
+function setSyncStatus(state,text){
+  document.getElementById('sync-dot').className   = 'sync-dot '+state;
+  document.getElementById('sync-label').className = 'sync-label '+state;
+  document.getElementById('sync-label').textContent = text;
+}
+
+/* ── SAVE ──
+   FIX BUG 2: guardamos siempre [] cuando no hay tareas,
+   nunca null, para que Firebase no devuelva null y recargue muestras */
+function save(){
+  localStorage.setItem(KEY, JSON.stringify(tasks));
+  if(fbRef){
+    setSyncStatus('syncing','Guardando…');
+    // Guardar array vacío explícitamente si no hay tareas
+    fbRef.set(tasks.length > 0 ? tasks : [])
+      .then(()=> setSyncStatus('synced','Sincronizado ✓'))
+      .catch(()=> setSyncStatus('error','Error al guardar'));
+  }
+}
+
+/* ── LOAD ── */
+function load(){
+  try{ tasks = JSON.parse(localStorage.getItem(KEY)) || []; }catch(e){ tasks=[]; }
+
+  // FIX BUG 1: solo cargar datos de ejemplo la PRIMERA vez que se usa la app
+  const isFirstRun = !localStorage.getItem(FIRST_RUN);
+  if(isFirstRun && tasks.length === 0){
+    localStorage.setItem(FIRST_RUN, '1');
+    const now = new Date().toISOString();
+    tasks = [
+      {id:1,title:'Preparar presentación del viernes',notes:'Incluir métricas Q1',category:'profesional',priority:'alta', done:false,createdAt:now,dueDate:advance(2), doneAt:null,gcal:null},
+      {id:2,title:'Revisión de presupuesto mensual',  notes:'',                  category:'profesional',priority:'media',done:false,createdAt:now,dueDate:advance(5), doneAt:null,gcal:null},
+      {id:3,title:'Llamar al médico para cita',       notes:'',                  category:'personal',   priority:'baja', done:false,createdAt:now,dueDate:advance(7), doneAt:null,gcal:null},
+      {id:4,title:'Hacer ejercicio',                  notes:'',                  category:'personal',   priority:'baja', done:true, createdAt:now,dueDate:advance(-1),doneAt:now, gcal:null},
+      {id:5,title:'Reunión kick-off Proyecto Alpha',  notes:'Ver propuesta',     category:'reuniones',  priority:'alta', done:false,createdAt:now,dueDate:TODAY,      doneAt:null,
+        gcal:{date:TODAY,start:'10:00',end:'11:00',loc:'https://meet.google.com/abc-defg-hij',desc:'Kick-off Alpha'}},
+    ];
+    localStorage.setItem(KEY, JSON.stringify(tasks));
+  } else if(!isFirstRun){
+    // No es primera vez: marcar igualmente para seguridad
+    localStorage.setItem(FIRST_RUN, '1');
+  }
+
+  // Reconectar Firebase si había config guardada
+  const savedCfg = localStorage.getItem(FB_CFG_KEY);
+  if(savedCfg){ try{ connectFirebase(JSON.parse(savedCfg)); }catch(e){} }
+
+  render();
+}
+
+/* ── FIREBASE ── */
+function connectFirebase(fromSaved){
+  const url = fromSaved ? fromSaved.url : document.getElementById('fb-url').value.trim();
+  const key = fromSaved ? fromSaved.key : document.getElementById('fb-key').value.trim();
+  if(!url || !key){ showConnectStatus('Por favor ingresa la URL y el API Key.','err'); return; }
+
+  try{
+    if(fbApp){ try{ fbApp.delete(); }catch(e){} fbApp=null; fbDb=null; fbRef=null; }
+    fbReady = false;
+
+    fbApp = firebase.initializeApp({apiKey:key, databaseURL:url}, 'tareasJC_'+Date.now());
+    fbDb  = firebase.database(fbApp);
+    fbRef = fbDb.ref('tareas');
+
+    setSyncStatus('syncing','Conectando…');
+
+    fbRef.on('value', snapshot => {
+      const data = snapshot.val();
+
+      if(!fbReady){
+        // Primera carga desde Firebase
+        fbReady = true;
+        if(data && Array.isArray(data) && data.length > 0){
+          // Firebase tiene datos → úsalos (son la fuente de verdad)
+          tasks = data;
+          localStorage.setItem(KEY, JSON.stringify(tasks));
+          render();
+        } else {
+          // Firebase vacío → subir tareas locales actuales
+          fbRef.set(tasks.length > 0 ? tasks : []);
+        }
+      } else {
+        // FIX BUG 2: ya inicializado → Firebase siempre manda
+        // (incluye cuando alguien borra desde otro dispositivo)
+        tasks = (data && Array.isArray(data)) ? data : [];
+        localStorage.setItem(KEY, JSON.stringify(tasks));
+        render();
+      }
+
+      setSyncStatus('synced','Sincronizado ✓');
+    }, err => {
+      setSyncStatus('error','Error de conexión');
+      if(!fromSaved) showConnectStatus('Error: '+err.message,'err');
+    });
+
+    localStorage.setItem(FB_CFG_KEY, JSON.stringify({url,key}));
+
+    if(!fromSaved){
+      showConnectStatus('¡Conectado! Sincronizando tareas…','ok');
+      setTimeout(()=>{ closeSync(); updateSyncUI(true,url); }, 1800);
+    } else {
+      updateSyncUI(true, url);
+    }
+
+  }catch(e){
+    setSyncStatus('error','Error');
+    if(!fromSaved) showConnectStatus('Error: '+e.message,'err');
+  }
+}
+
+function disconnectFirebase(){
+  if(fbRef){ fbRef.off(); fbRef=null; }
+  if(fbApp){ try{ fbApp.delete(); }catch(e){} fbApp=null; fbDb=null; }
+  fbReady = false;
+  localStorage.removeItem(FB_CFG_KEY);
+  setSyncStatus('offline','Sin sincronización');
+  updateSyncUI(false,'');
+  document.querySelector('.btn-sync-setup').textContent = '⚙️ Configurar Sync';
+}
+
+function updateSyncUI(connected, url){
+  document.getElementById('sync-connected-view').style.display = connected ? 'block' : 'none';
+  document.getElementById('sync-setup-view').style.display     = connected ? 'none'  : 'block';
+  if(connected){
+    document.getElementById('connected-db-url').textContent = url;
+    document.querySelector('.btn-sync-setup').textContent = '🟢 Sincronizado';
+  }
+}
+
+function showConnectStatus(msg,type){
+  const el = document.getElementById('connect-status');
+  el.textContent = msg; el.className = 'connect-status '+type;
+}
+
+/* ── MODALS ── */
+function openSync()  { document.getElementById('sync-overlay').classList.add('open'); }
+function closeSync() { document.getElementById('sync-overlay').classList.remove('open'); }
+function openCL()    { document.getElementById('cl-overlay').classList.add('open'); }
+function closeCL()   { document.getElementById('cl-overlay').classList.remove('open'); }
+function closeEdit() { document.getElementById('edit-overlay').classList.remove('open'); }
+['sync-overlay','cl-overlay','edit-overlay'].forEach(id=>{
+  document.getElementById(id).addEventListener('click',e=>{
+    if(e.target===document.getElementById(id)) document.getElementById(id).classList.remove('open');
+  });
+});
+
+/* ── v1.3.0 CATEGORY SELECTOR ── */
+const CAT_KEYWORDS = {
+  reuniones: ['llamada','llamar','reunión','reunion','meeting','call','video','zoom','teams','skype','junta','conferencia','kick-off','kickoff','standup','stand-up','sync','presentación','presentacion','demo','entrevista','cliente'],
+  personal:  ['comprar','mercado','supermercado','médico','medico','cita','gym','ejercicio','entrenar','casa','familia','dentista','farmacia','banco','pagar','pasear','vacaciones','cumpleaños','cumpleanos','recoger','llevar','bebé','bebe','mascota','perro','gato'],
+};
+
+function normStr(s){ return s.toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g,''); }
+
+function detectCat(title){
+  const t = normStr(title);
+  for(const [cat, words] of Object.entries(CAT_KEYWORDS)){
+    if(words.some(w => t.includes(normStr(w)))) return cat;
+  }
+  return null; // sin detección → no cambiar
+}
+
+function selectCat(cat, btn, silent){
+  selectedCat = cat;
+  document.querySelectorAll('.cat-type-btn').forEach(b => b.classList.remove('active'));
+  if(btn){ btn.classList.add('active'); }
+  else {
+    const b = document.querySelector(`.cat-type-btn[data-cat="${cat}"]`);
+    if(b) b.classList.add('active');
+  }
+  // Smart priority defaults
+  const pri = document.getElementById('inp-pri');
+  if(cat === 'personal'){
+    pri.value = 'baja';
+  } else if(cat === 'reuniones'){
+    pri.value = 'alta';
+    // Sugerir fecha hoy si no hay fecha puesta
+    if(!document.getElementById('inp-due').value){
+      document.getElementById('inp-due').value = TODAY;
+      document.getElementById('gcal-date').value = TODAY;
+    }
+  } else {
+    pri.value = 'media';
+  }
+  toggleGcal();
+}
+
+/* ── FORM ── */
+function toggleGcal(){
+  const b=document.getElementById('gcal-block');
+  selectedCat==='reuniones' ? b.classList.add('show') : b.classList.remove('show');
+}
+function syncDueFromGcal(){
+  const v=document.getElementById('gcal-date').value;
+  if(v) document.getElementById('inp-due').value=v;
+}
+function addTask(){
+  const title=document.getElementById('inp-title').value.trim();
+  if(!title){ document.getElementById('inp-title').focus(); return; }
+  const cat=selectedCat;
+  const gcal=cat==='reuniones'?{
+    date:  document.getElementById('gcal-date').value,
+    start: document.getElementById('gcal-s').value,
+    end:   document.getElementById('gcal-e').value,
+    loc:   document.getElementById('gcal-loc').value.trim(),
+    desc:  document.getElementById('gcal-desc').value.trim(),
+  }:null;
+  tasks.unshift({
+    id:        Date.now(), title,
+    notes:     document.getElementById('inp-notes').value.trim(),
+    category:  cat,
+    priority:  document.getElementById('inp-pri').value,
+    done:      false,
+    createdAt: new Date().toISOString(),
+    dueDate:   document.getElementById('inp-due').value||null,
+    doneAt:    null, gcal,
+  });
+  ['inp-title','inp-notes','inp-due','gcal-date','gcal-loc','gcal-desc'].forEach(id=>document.getElementById(id).value='');
+  document.getElementById('gcal-s').value='09:00';
+  document.getElementById('gcal-e').value='10:00';
+  // Reset hint and category to default
+  const hint=document.getElementById('cat-hint'); hint.textContent=''; hint.className='cat-hint';
+  selectCat('profesional', null);
+  save(); render();
+}
+
+/* ── ACTIONS ── */
+function toggleTask(id){
+  const t=tasks.find(t=>t.id===id); if(!t)return;
+  t.done=!t.done; t.doneAt=t.done?new Date().toISOString():null;
+  save(); render();
+}
+function deleteTask(id){
+  tasks=tasks.filter(t=>t.id!==id);
+  save(); render(); // FIX BUG 1: save() guarda [] si está vacío, no recarga muestras
+}
+function clearDone(){ tasks=tasks.filter(t=>!t.done); save(); render(); }
+
+function openEdit(id){
+  const t=tasks.find(t=>t.id===id); if(!t)return;
+  document.getElementById('edit-id').value    = id;
+  document.getElementById('edit-title').value = t.title;
+  document.getElementById('edit-notes').value = t.notes||'';
+  document.getElementById('edit-cat').value   = t.category;
+  document.getElementById('edit-pri').value   = t.priority;
+  document.getElementById('edit-due').value   = t.dueDate||'';
+  document.getElementById('edit-overlay').classList.add('open');
+}
+function saveEdit(){
+  const id=+document.getElementById('edit-id').value;
+  const t=tasks.find(t=>t.id===id); if(!t)return;
+  t.title    = document.getElementById('edit-title').value.trim()||t.title;
+  t.notes    = document.getElementById('edit-notes').value.trim();
+  t.category = document.getElementById('edit-cat').value;
+  t.priority = document.getElementById('edit-pri').value;
+  t.dueDate  = document.getElementById('edit-due').value||null;
+  save(); render(); closeEdit();
+}
+
+/* ── FILTER ── */
+function setFilter(f,btn){
+  filter=f;
+  document.querySelectorAll('.fbtn').forEach(b=>b.classList.remove('active'));
+  btn.classList.add('active'); render();
+}
+function getFiltered(){
+  switch(filter){
+    case 'personal':    return tasks.filter(t=>t.category==='personal');
+    case 'profesional': return tasks.filter(t=>t.category==='profesional');
+    case 'reuniones':   return tasks.filter(t=>t.category==='reuniones');
+    case 'pendientes':  return tasks.filter(t=>!t.done);
+    case 'completadas': return tasks.filter(t=>t.done);
+    case 'vencidas':    return tasks.filter(t=>!t.done&&t.dueDate&&t.dueDate<TODAY);
+    default:            return tasks;
+  }
+}
+
+/* ── GCAL ── */
+function gcalUrl(t){
+  const g=t.gcal||{}, ds=g.date||t.dueDate; if(!ds)return null;
+  const s=ds.replace(/-/g,'')+'T'+(g.start||'09:00').replace(':','')+'00';
+  const e=ds.replace(/-/g,'')+'T'+(g.end  ||'10:00').replace(':','')+'00';
+  const p=new URLSearchParams({action:'TEMPLATE',text:t.title,dates:s+'/'+e,details:g.desc||t.notes||'',location:g.loc||''});
+  return 'https://calendar.google.com/calendar/render?'+p.toString();
+}
+
+/* ── RENDER ── */
+function render(){
+  const total=tasks.length, done=tasks.filter(t=>t.done).length, pend=total-done;
+  const venc=tasks.filter(t=>!t.done&&t.dueDate&&t.dueDate<TODAY).length;
+  const hoy =tasks.filter(t=>!t.done&&t.dueDate===TODAY).length;
+  const pct =total?Math.round(done/total*100):0;
+  document.getElementById('d-total').textContent=total;
+  document.getElementById('d-pend').textContent =pend;
+  document.getElementById('d-hoy').textContent  =hoy;
+  document.getElementById('d-venc').textContent =venc;
+  document.getElementById('d-done').textContent =done;
+  document.getElementById('pct-lbl').textContent=pct+'%';
+  document.getElementById('prog-fill').style.width=pct+'%';
+  const filtered=getFiltered(), wrap=document.getElementById('tasks-wrap');
+  if(!filtered.length){ wrap.innerHTML=`<div class="empty"><div class="ico">🎉</div><p>¡Sin tareas en esta vista!</p></div>`; return; }
+  let html='';
+  if(filter==='todas'){
+    [{key:'reuniones',lbl:'📅 Reuniones'},{key:'profesional',lbl:'💼 Profesional'},{key:'personal',lbl:'🙋 Personal'}]
+      .forEach(g=>{ const l=filtered.filter(t=>t.category===g.key); if(l.length) html+=`<div class="section-lbl">${g.lbl}</div>`+l.map(card).join(''); });
+  } else { html=filtered.map(card).join(''); }
+  wrap.innerHTML=html;
+}
+
+function card(t){
+  const ov=!t.done&&t.dueDate&&t.dueDate<TODAY, td=!t.done&&t.dueDate===TODAY;
+  const cls=t.done?'done-item':ov?'overdue':td?'due-today':'';
+  const priLbl={alta:'Alta',media:'Media',baja:'Baja'};
+  const catLbl={personal:'Personal',profesional:'Profesional',reuniones:'Reunión'};
+  const md=t.gcal?.date;
+  let chips=`<span class="date-chip">🕐 ${disp(t.createdAt?.split('T')[0])}</span>`;
+  if(md) chips+=`<span class="date-chip" style="color:#7B2D8B;font-weight:800">📅 ${disp(md)} ${t.gcal?.start||''}</span>`;
+  else if(t.dueDate){ const dc=ov?'ov':td?'td':'', ic=ov?'🚨':td?'⏰':'📅'; chips+=`<span class="date-chip ${dc}">${ic} ${disp(t.dueDate)}</span>`; }
+  if(t.doneAt) chips+=`<span class="date-chip ok">✅ ${disp(t.doneAt.split('T')[0])}</span>`;
+  const url=t.category==='reuniones'?gcalUrl(t):null;
+  const gcalBtn=url?`<a class="btn-gcal" href="${esc(url)}" target="_blank" rel="noopener">📅 Google Calendar</a>`:'';
+  return `
+  <div class="task-item ${cls}">
+    <div class="task-check ${t.done?'checked':''}" onclick="toggleTask(${t.id})"></div>
+    <div class="task-body">
+      <div class="task-title">${esc(t.title)}</div>
+      ${t.notes?`<div class="task-notes">${esc(t.notes)}</div>`:''}
+      <div class="task-tags">
+        <span class="tag tag-${t.category}">${catLbl[t.category]}</span>
+        <span class="pri-badge pri-${t.priority}-c"><span class="dot dot-${t.priority}"></span>${priLbl[t.priority]}</span>
+        ${ov?'<span class="status-badge badge-overdue">Vencida</span>':''}
+        ${td?'<span class="status-badge badge-today">Vence hoy</span>':''}
+      </div>
+      <div class="date-row">${chips}</div>
+      ${gcalBtn?`<div>${gcalBtn}</div>`:''}
+    </div>
+    <div class="task-actions">
+      <button class="btn-icon"     onclick="openEdit(${t.id})">✏️</button>
+      <button class="btn-icon btn-del" onclick="deleteTask(${t.id})">✕</button>
+    </div>
+  </div>`;
+}
+
+/* ── INIT ── */
+document.getElementById('inp-title').addEventListener('keydown',e=>{ if(e.key==='Enter')addTask(); });
+
+// v1.3.0: Smart keyword detection while typing
+(function(){
+  let detectTimer = null;
+  const hintLabels = { profesional:'💼 Detectado: Profesional', reuniones:'📆 Detectado: Reunión', personal:'🙋🏻‍♂️ Detectado: Personal' };
+  document.getElementById('inp-title').addEventListener('input', function(){
+    clearTimeout(detectTimer);
+    const val = this.value.trim();
+    const hint = document.getElementById('cat-hint');
+    if(!val){ hint.textContent=''; hint.className='cat-hint'; return; }
+    detectTimer = setTimeout(()=>{
+      const cat = detectCat(val);
+      if(cat && cat !== selectedCat){
+        selectCat(cat, null);
+        hint.textContent = hintLabels[cat] + ' (auto)';
+        hint.className = `cat-hint show cat-hint-${cat}`;
+      } else if(!cat){
+        hint.textContent=''; hint.className='cat-hint';
+      }
+    }, 400);
+  });
+})();
+const nowD=new Date();
+const dias=['domingo','lunes','martes','miércoles','jueves','viernes','sábado'];
+const mes=['enero','febrero','marzo','abril','mayo','junio','julio','agosto','septiembre','octubre','noviembre','diciembre'];
+document.getElementById('fecha-hoy').textContent=`${dias[nowD.getDay()]}, ${nowD.getDate()} de ${mes[nowD.getMonth()]} de ${nowD.getFullYear()}`;
+load();
+
+/* ── PWA ── */
+(function buildPWA(){
+  const S=512,c=document.createElement('canvas'); c.width=c.height=S;
+  const ctx=c.getContext('2d'),r=90;
+  ctx.beginPath();ctx.moveTo(r,0);ctx.lineTo(S-r,0);ctx.quadraticCurveTo(S,0,S,r);ctx.lineTo(S,S-r);ctx.quadraticCurveTo(S,S,S-r,S);ctx.lineTo(r,S);ctx.quadraticCurveTo(0,S,0,S-r);ctx.lineTo(0,r);ctx.quadraticCurveTo(0,0,r,0);ctx.closePath();ctx.fillStyle='#111';ctx.fill();
+  const p=30,ri=65;ctx.beginPath();ctx.moveTo(p+ri,p);ctx.lineTo(S-p-ri,p);ctx.quadraticCurveTo(S-p,p,S-p,p+ri);ctx.lineTo(S-p,S-p-ri);ctx.quadraticCurveTo(S-p,S-p,S-p-ri,S-p);ctx.lineTo(p+ri,S-p);ctx.quadraticCurveTo(p,S-p,p,S-p-ri);ctx.lineTo(p,p+ri);ctx.quadraticCurveTo(p,p,p+ri,p);ctx.closePath();ctx.fillStyle='#FFD100';ctx.fill();
+  ctx.fillStyle='#111';ctx.beginPath();ctx.roundRect(100,110,312,72,20);ctx.fill();ctx.beginPath();ctx.roundRect(220,155,72,220,20);ctx.fill();
+  ctx.beginPath();ctx.arc(370,370,72,0,Math.PI*2);ctx.fillStyle='#111';ctx.fill();
+  ctx.strokeStyle='#FFD100';ctx.lineWidth=22;ctx.lineCap='round';ctx.lineJoin='round';ctx.beginPath();ctx.moveTo(336,370);ctx.lineTo(360,400);ctx.lineTo(408,335);ctx.stroke();
+  const du=c.toDataURL('image/png');
+  document.getElementById('apple-touch-icon').href=du;
+  document.getElementById('favicon').href=du;
+  const mf={name:'TAREAS JC',short_name:'TAREAS JC',description:'Quick v'+APP_VERSION,start_url:'.',display:'standalone',orientation:'portrait',background_color:'#FFD100',theme_color:'#FFD100',icons:[{src:du,sizes:'512x512',type:'image/png',purpose:'any maskable'}]};
+  document.getElementById('pwa-manifest').href=URL.createObjectURL(new Blob([JSON.stringify(mf)],{type:'application/manifest+json'}));
+})();
+
+if('serviceWorker' in navigator){
+  const sw=`const C='tjc-${APP_VERSION}';self.addEventListener('install',()=>self.skipWaiting());self.addEventListener('activate',e=>e.waitUntil(clients.claim()));self.addEventListener('fetch',e=>e.respondWith(caches.match(e.request).then(c=>c||fetch(e.request).then(r=>{const k=r.clone();caches.open(C).then(ca=>ca.put(e.request,k));return r;}))));`;
+  navigator.serviceWorker.register(URL.createObjectURL(new Blob([sw],{type:'application/javascript'}))).catch(()=>{});
+}
+
+(function banner(){
+  if(!/iphone|ipad|ipod/i.test(navigator.userAgent)||window.navigator.standalone===true||sessionStorage.getItem('ib'))return;
+  setTimeout(()=>{ const b=document.getElementById('install-banner'); if(b)b.classList.add('show'); },2500);
+})();
+function dismissBanner(){ sessionStorage.setItem('ib','1'); document.getElementById('install-banner').classList.remove('show'); }
+</script>
+</body>
+</html>
