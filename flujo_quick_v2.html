@@ -1,0 +1,1777 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Flujo Comercial Digital — Grupo Quick</title>
+<style>
+:root{
+  --primary:#0D3B66;--accent:#E67E22;--success:#16A34A;--warning:#D97706;
+  --ia:#0284C7;--bigdeal:#DC2626;
+  --qco:#1A1A1A;--qusa:#B71C1C;--qmex:#2E7D32;--qchl:#E65100;
+  --qclean:#0277BD;--smart:#1A1A1A;--bel:#455A64;
+}
+*{box-sizing:border-box;margin:0;padding:0;}
+body{font-family:'Segoe UI',system-ui,sans-serif;background:#EFF3F8;color:#1e293b;}
+
+/* HEADER */
+.hdr{background:linear-gradient(135deg,#0D3B66 0%,#1d5ea8 100%);color:#fff;
+  padding:18px 28px 14px;position:sticky;top:0;z-index:100;
+  box-shadow:0 3px 20px rgba(0,0,0,.35);}
+.hdr h1{font-size:1.25rem;font-weight:800;letter-spacing:-.4px;}
+.hdr p{font-size:.78rem;opacity:.75;margin-top:2px;}
+.filters{display:flex;gap:7px;margin-top:12px;flex-wrap:wrap;align-items:center;}
+.fb{padding:5px 13px;border-radius:20px;border:1.5px solid rgba(255,255,255,.4);
+  background:transparent;color:#fff;font-size:.72rem;cursor:pointer;
+  transition:all .18s;font-weight:600;letter-spacing:.3px;}
+.fb:hover,.fb.on{background:rgba(255,255,255,.18);border-color:#fff;}
+.fb.all.on{background:#fff;color:#0D3B66;}
+
+/* UEN sub-menu */
+#uen-submenu{display:none;margin-top:10px;padding-top:10px;
+  border-top:1px solid rgba(255,255,255,.2);}
+#uen-submenu .sub-label{font-size:.68rem;opacity:.7;margin-right:6px;font-weight:600;text-transform:uppercase;letter-spacing:.5px;}
+.uen-btn{padding:4px 11px;border-radius:20px;border:1.5px solid rgba(255,255,255,.3);
+  background:rgba(255,255,255,.08);color:#fff;font-size:.7rem;cursor:pointer;
+  transition:all .18s;font-weight:600;}
+.uen-btn:hover,.uen-btn.on{background:rgba(255,255,255,.25);border-color:#fff;}
+
+/* MAIN */
+.main{max-width:1100px;margin:0 auto;padding:28px 16px 50px;}
+
+/* CONNECTOR */
+.conn{display:flex;flex-direction:column;align-items:center;}
+.conn-line{width:2px;height:36px;background:linear-gradient(#93C5FD,#CBD5E1);}
+.conn-arrow{width:0;height:0;border-left:7px solid transparent;
+  border-right:7px solid transparent;border-top:10px solid #CBD5E1;}
+
+/* STAGE CARD */
+.stage{background:#fff;border-radius:14px;padding:20px 22px;
+  box-shadow:0 2px 14px rgba(0,0,0,.07);border-left:5px solid;
+  position:relative;cursor:pointer;transition:transform .18s,box-shadow .18s;}
+.stage:hover{transform:translateY(-2px);box-shadow:0 8px 28px rgba(0,0,0,.13);}
+.sn{position:absolute;top:-13px;left:20px;background:#0D3B66;color:#fff;
+  width:26px;height:26px;border-radius:50%;font-size:.68rem;font-weight:800;
+  display:flex;align-items:center;justify-content:center;}
+.sh{display:flex;align-items:center;gap:12px;margin-bottom:9px;}
+.si{font-size:1.35rem;width:40px;height:40px;border-radius:10px;
+  display:flex;align-items:center;justify-content:center;}
+.st{font-size:.98rem;font-weight:700;color:#0f172a;}
+.ss{font-size:.76rem;color:#64748b;margin-top:1px;}
+.sb{font-size:.82rem;color:#475569;line-height:1.55;}
+.badges{display:flex;flex-wrap:wrap;gap:6px;margin-top:10px;}
+.badge{padding:3px 10px;border-radius:20px;font-size:.7rem;font-weight:600;}
+.badge-kpi{background:#FEF9C3;color:#854D0E;}
+.badge-ia{background:#E0F2FE;color:#0369A1;}
+.badge-tip{background:#F0FDF4;color:#166534;}
+.badge-warn{background:#FEF2F2;color:#991B1B;}
+.click-hint{font-size:.68rem;color:#94A3B8;text-align:right;margin-top:6px;}
+
+/* Channel bullets */
+.channel-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(180px,1fr));
+  gap:8px;margin-top:12px;}
+.channel-item{display:flex;align-items:center;gap:8px;background:#F8FAFC;
+  border-radius:8px;padding:7px 10px;border-left:3px solid;
+  cursor:pointer;transition:transform .15s,box-shadow .15s;}
+.channel-item:hover{transform:translateY(-2px);box-shadow:0 4px 12px rgba(0,0,0,.1);background:#fff;}
+.channel-item .ch-icon{font-size:1rem;}
+.channel-item .ch-text{font-size:.76rem;color:#334155;font-weight:600;}
+.channel-item .ch-sub{font-size:.67rem;color:#64748b;margin-top:1px;}
+.channel-item .ch-hint{font-size:.6rem;color:#94A3B8;margin-top:2px;}
+/* Process steps inside panel */
+.proc-step{display:flex;gap:10px;margin-bottom:12px;padding-bottom:12px;border-bottom:1px solid #f1f5f9;}
+.proc-step:last-child{border-bottom:none;}
+.proc-num{min-width:26px;height:26px;border-radius:50%;color:#fff;font-size:.72rem;
+  font-weight:800;display:flex;align-items:center;justify-content:center;flex-shrink:0;}
+.proc-text{font-size:.8rem;color:#475569;line-height:1.5;}
+.proc-text strong{color:#0f172a;display:block;margin-bottom:1px;font-size:.82rem;}
+.kpi-row{display:flex;flex-wrap:wrap;gap:8px;margin:10px 0;}
+.kpi-pill{background:#F0F9FF;border:1px solid #BAE6FD;border-radius:20px;
+  padding:4px 10px;font-size:.7rem;font-weight:700;color:#0369A1;}
+.kpi-pill.green{background:#F0FDF4;border-color:#BBF7D0;color:#166534;}
+.kpi-pill.amber{background:#FFFBEB;border-color:#FDE68A;color:#92400E;}
+.kpi-pill.red{background:#FFF1F2;border-color:#FECDD3;color:#9F1239;}
+.err-item{font-size:.78rem;color:#7F1D1D;background:#FFF1F2;border-radius:7px;
+  padding:6px 10px;margin-bottom:6px;display:flex;gap:6px;align-items:flex-start;}
+.err-item::before{content:'✕';font-weight:800;flex-shrink:0;}
+
+/* DECISION */
+.decision .stage{background:linear-gradient(135deg,#FFFBEB,#fff);border-left-color:#D97706;}
+.dec-label{font-size:.7rem;color:#92400E;font-weight:700;text-transform:uppercase;letter-spacing:.5px;margin-bottom:4px;}
+.dec-branches{display:flex;gap:10px;margin-top:14px;}
+.dec-branch{flex:1;border-radius:9px;padding:10px 12px;font-size:.75rem;}
+.dec-yes{background:#FEF2F2;border:1.5px dashed #EF4444;color:#991B1B;}
+.dec-no{background:#F0FDF4;border:1.5px dashed #22C55E;color:#166534;}
+.dec-branch strong{display:block;font-weight:700;margin-bottom:3px;}
+
+/* ROUTING */
+.routing-wrap{background:#fff;border-radius:16px;padding:26px 22px;
+  box-shadow:0 2px 14px rgba(0,0,0,.07);}
+.routing-title{text-align:center;font-size:1.05rem;font-weight:800;color:#0f172a;}
+.routing-sub{text-align:center;font-size:.78rem;color:#64748b;margin-top:3px;margin-bottom:22px;}
+.bigdeal-banner{background:linear-gradient(135deg,#EF4444,#B91C1C);color:#fff;
+  border-radius:10px;padding:12px 16px;margin-bottom:18px;
+  display:flex;align-items:center;gap:12px;}
+.bigdeal-icon{font-size:1.6rem;}
+.bigdeal-text strong{display:block;font-size:.88rem;font-weight:700;}
+.bigdeal-text span{font-size:.75rem;opacity:.9;}
+
+/* Company grid */
+.cgrid{display:grid;
+  grid-template-columns:1.9fr 1fr 1fr 1fr 1fr 1fr 1fr;gap:10px;}
+.ccard{border-radius:10px;overflow:hidden;border:2px solid;
+  transition:transform .2s,box-shadow .2s;cursor:pointer;}
+.ccard:hover{transform:translateY(-4px);box-shadow:0 10px 24px rgba(0,0,0,.18);}
+.ccard.lit{transform:translateY(-4px);box-shadow:0 10px 24px rgba(0,0,0,.2);}
+.cc-hdr{padding:9px 11px;color:#fff;font-weight:800;font-size:.78rem;
+  display:flex;align-items:center;gap:6px;}
+.cc-body{padding:10px 11px;background:#fff;}
+.cc-mgr{font-size:.68rem;color:#64748b;font-weight:600;margin-bottom:7px;
+  padding-bottom:5px;border-bottom:1px solid #f1f5f9;}
+.svcs{list-style:none;}
+.svcs li{font-size:.67rem;color:#475569;padding:2.5px 0;
+  border-bottom:1px solid #f8fafc;display:flex;align-items:flex-start;gap:4px;}
+.svcs li:last-child{border-bottom:none;}
+.svcs li::before{content:'›';font-weight:800;opacity:.6;flex-shrink:0;margin-top:1px;}
+.svcs li.group{font-weight:700;color:#334155;padding-top:6px;}
+.svcs li.group::before{content:'▸';color:currentColor;}
+.svcs li.sub{padding-left:10px;font-size:.64rem;opacity:.85;}
+.svcs li.sub::before{content:'·';}
+
+/* UEN grid for QCO (compact view) */
+.uen-grid{display:grid;grid-template-columns:1fr 1fr;gap:6px;margin-top:8px;}
+.uen{background:#EFF6FF;border-radius:7px;padding:6px 8px;border-left:3px solid #FFC300;}
+.uen-name{font-size:.67rem;font-weight:800;color:#1A1A1A;}
+.uen-mgr{font-size:.6rem;color:#64748b;margin-top:1px;}
+
+/* Solo/expanded card styles */
+#cgrid[style*="1fr"] .ccard .cc-hdr{font-size:1rem;padding:12px 14px;}
+#cgrid[style*="1fr"] .ccard .cc-mgr{font-size:.82rem;margin-bottom:10px;}
+#cgrid[style*="1fr"] .ccard .cc-body{padding:14px;}
+#cgrid[style*="1fr"] .svcs li{font-size:.78rem;padding:4px 0;}
+#cgrid[style*="1fr"] .svcs li.sub{font-size:.72rem;}
+#cgrid[style*="1fr"] .uen-grid{grid-template-columns:repeat(4,1fr);gap:10px;}
+#cgrid[style*="1fr"] .uen{padding:10px 12px;}
+#cgrid[style*="1fr"] .uen-name{font-size:.78rem;}
+#cgrid[style*="1fr"] .uen-mgr{font-size:.7rem;}
+
+/* UEN detail card (shown when a UEN sub-filter is active) */
+.uen-detail{display:none;margin-top:16px;}
+.uen-detail.visible{display:block;}
+.uen-detail-card{border-radius:12px;overflow:hidden;border:2px solid #FFC300;}
+.uen-detail-hdr{background:#FFC300;color:#1A1A1A;padding:14px 18px;
+  display:flex;align-items:center;gap:10px;}
+.uen-detail-hdr .uen-icon{font-size:1.4rem;}
+.uen-detail-hdr h3{font-size:1rem;font-weight:800;}
+.uen-detail-hdr p{font-size:.75rem;opacity:.85;margin-top:2px;}
+.uen-detail-body{background:#fff;padding:16px 18px;}
+.uen-detail-mgr{font-size:.8rem;color:#64748b;font-weight:600;margin-bottom:14px;
+  padding-bottom:8px;border-bottom:1px solid #f1f5f9;}
+.svc-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:8px;}
+.svc-chip{background:#FFFBEA;border:1px solid #FFE082;border-radius:8px;
+  padding:8px 12px;font-size:.78rem;font-weight:600;color:#1A1A1A;
+  display:flex;align-items:center;gap:6px;}
+.svc-chip::before{content:'✦';font-size:.6rem;opacity:.7;}
+
+/* SIDE PANEL */
+.overlay{position:fixed;inset:0;background:rgba(0,0,0,.45);z-index:200;display:none;}
+.overlay.on{display:block;}
+.panel{position:fixed;right:-420px;top:0;width:400px;height:100vh;
+  background:#fff;z-index:300;box-shadow:-6px 0 32px rgba(0,0,0,.18);
+  transition:right .3s ease;overflow-y:auto;}
+.panel.on{right:0;}
+.ph{padding:20px;background:linear-gradient(135deg,#0D3B66,#1d5ea8);
+  color:#fff;position:sticky;top:0;}
+.ph h2{font-size:.98rem;font-weight:700;}
+.ph p{font-size:.75rem;opacity:.75;margin-top:3px;}
+.pclose{position:absolute;top:14px;right:14px;background:rgba(255,255,255,.2);
+  border:none;color:#fff;width:28px;height:28px;border-radius:50%;
+  cursor:pointer;font-size:1rem;display:flex;align-items:center;justify-content:center;}
+.pb{padding:20px;}
+.bp-item{display:flex;gap:10px;margin-bottom:14px;padding-bottom:14px;
+  border-bottom:1px solid #f1f5f9;}
+.bp-item:last-child{border-bottom:none;}
+.bp-n{min-width:24px;height:24px;border-radius:50%;background:#0D3B66;
+  color:#fff;font-size:.68rem;font-weight:700;display:flex;
+  align-items:center;justify-content:center;margin-top:2px;}
+.bp-t{font-size:.8rem;color:#475569;line-height:1.5;}
+.bp-t strong{color:#0f172a;display:block;margin-bottom:2px;font-size:.82rem;}
+.stat{background:#F0F9FF;border-radius:9px;padding:12px;
+  margin-bottom:12px;border-left:3px solid #0284C7;}
+.stat-n{font-size:1.45rem;font-weight:800;color:#0D3B66;}
+.stat-l{font-size:.72rem;color:#64748b;margin-top:2px;}
+.section-title{font-size:.78rem;font-weight:700;text-transform:uppercase;
+  letter-spacing:.5px;color:#94A3B8;margin:18px 0 10px;}
+
+/* KPI BAR */
+.kpi-bar{background:linear-gradient(135deg,#0D3B66,#1d5ea8);border-radius:16px;
+  padding:26px;color:#fff;margin-top:22px;}
+.kpi-bar h3{font-size:1rem;font-weight:700;margin-bottom:16px;}
+.kgrid{display:grid;grid-template-columns:repeat(4,1fr);gap:14px;}
+.ki{background:rgba(255,255,255,.1);border-radius:10px;padding:14px;text-align:center;}
+.ki-n{font-size:1.5rem;font-weight:800;}
+.ki-d{font-size:.68rem;opacity:.8;margin-top:4px;line-height:1.4;}
+
+/* BP STRIP */
+.bp-strip{background:#fff;border-radius:14px;padding:22px;
+  box-shadow:0 2px 14px rgba(0,0,0,.07);margin-top:22px;}
+.bps-title{font-size:1rem;font-weight:700;color:#0f172a;margin-bottom:16px;}
+.bps-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:14px;}
+.bps-item{background:#F8FAFC;border-radius:10px;padding:14px;border-top:3px solid;}
+.bps-item h4{font-size:.82rem;font-weight:700;color:#0f172a;margin-bottom:6px;}
+.bps-item p{font-size:.75rem;color:#475569;line-height:1.5;}
+
+@media(max-width:900px){
+  .cgrid{grid-template-columns:1fr 1fr 1fr;}
+  .kgrid{grid-template-columns:1fr 1fr;}
+  .bps-grid{grid-template-columns:1fr 1fr;}
+}
+@media(max-width:600px){
+  .cgrid{grid-template-columns:1fr 1fr;}
+  .bps-grid{grid-template-columns:1fr;}
+  .kgrid{grid-template-columns:1fr 1fr;}
+  .panel{width:100%;}
+  .dec-branches{flex-direction:column;}
+}
+
+/* CHECKBOX MULTI-OPCIÓN */
+.chk-opt{
+  display:inline-flex;align-items:center;gap:5px;
+  padding:4px 10px 4px 7px;border-radius:10px;
+  font-size:.67rem;font-weight:600;cursor:pointer;user-select:none;
+  border:1.5px solid #CBD5E1;background:#F8FAFC;color:#64748b;
+  transition:all .15s;
+}
+.chk-opt:hover{border-color:#94A3B8;background:#F1F5F9;}
+.chk-opt.chk-on{border-color:#0284C7;background:#DBEAFE;color:#1e40af;}
+.chk-icon{
+  width:13px;height:13px;border:1.5px solid #94A3B8;border-radius:3px;
+  display:inline-flex;align-items:center;justify-content:center;
+  flex-shrink:0;background:#fff;font-size:.55rem;font-weight:900;
+  color:transparent;transition:all .15s;
+}
+.chk-opt.chk-on .chk-icon{border-color:#0284C7;background:#0284C7;color:#fff;}
+.chk-opt.chk-on .chk-icon::after{content:'✓';}
+.multi-hint{font-size:.62rem;color:#0284C7;font-weight:600;margin-top:3px;margin-bottom:2px;display:block;}
+</style>
+</head>
+<body>
+
+<!-- HEADER -->
+<div class="hdr">
+  <h1>🔄 Modelo de Flujo Comercial Digital — Grupo Quick</h1>
+  <p>Flujo lead-to-proposal con inteligencia artificial · Mejores prácticas globales · 7 empresas del grupo</p>
+  <div class="filters" id="main-filters">
+    <button class="fb all on" onclick="filter('all',event)">Todas las empresas</button>
+    <button class="fb" style="border-color:#FFC300" onclick="filter('qco',event)">🇨🇴 Quick Colombia</button>
+    <button class="fb" style="border-color:var(--qusa)" onclick="filter('qusa',event)">🇺🇸 Quick USA</button>
+    <button class="fb" style="border-color:var(--qmex)" onclick="filter('qmex',event)">🇲🇽 Quick México</button>
+    <button class="fb" style="border-color:var(--qchl)" onclick="filter('qchl',event)">🇨🇱 Quick Chile</button>
+    <button class="fb" style="border-color:var(--qclean)" onclick="filter('qclean',event)">🧹 Quick Clean</button>
+    <button class="fb" style="border-color:var(--smart)" onclick="filter('smart',event)">💡 SmartQuick</button>
+    <button class="fb" style="border-color:var(--bel)" onclick="filter('bel',event)">⚖️ Belavenko</button>
+  </div>
+  <!-- UEN sub-menu (solo visible al seleccionar Quick Colombia) -->
+  <div id="uen-submenu">
+    <div style="display:flex;align-items:center;flex-wrap:wrap;gap:7px;">
+      <span class="sub-label">↳ UEN Quick Colombia:</span>
+      <button class="uen-btn" onclick="filterUEN('tcm',event)">🚛 Transporte Carga Masiva</button>
+      <button class="uen-btn" onclick="filterUEN('dis',event)">🏙️ Distribución Urbana</button>
+      <button class="uen-btn" onclick="filterUEN('ulm',event)">📦 Última Milla</button>
+      <button class="uen-btn" onclick="filterUEN('alm',event)">🏭 Almacenamiento</button>
+      <button class="uen-btn" id="uen-all-btn" onclick="filterUEN('all',event)" style="opacity:.6;">Ver todas las UENs</button>
+    </div>
+  </div>
+</div>
+
+<!-- OVERLAY + PANEL -->
+<div class="overlay" id="overlay" onclick="closePanel()"></div>
+<div class="panel" id="panel">
+  <div class="ph">
+    <h2 id="panel-title">Mejores Prácticas</h2>
+    <p id="panel-sub">Benchmarks y recomendaciones globales</p>
+    <button class="pclose" onclick="closePanel()">✕</button>
+  </div>
+  <div class="pb" id="panel-body"></div>
+</div>
+
+<!-- MAIN FLOW -->
+<div class="main">
+
+<!-- 1. CAPTURA -->
+<div class="flow-wrap">
+  <div class="stage" style="border-left-color:#0284C7" onclick="openPanel('capture')">
+    <div class="sn">1</div>
+    <div class="sh">
+      <div class="si" style="background:#E0F2FE">📥</div>
+      <div><div class="st">Captura de Lead</div><div class="ss">Entrada multi-canal — digital, telefónico y correo</div></div>
+    </div>
+    <div class="sb">El sistema captura automáticamente leads desde todos los canales activos. El CRM recibe el registro en tiempo real y dispara el proceso de clasificación de forma inmediata.</div>
+    <div class="channel-grid">
+      <div class="channel-item" style="border-color:#0284C7" onclick="event.stopPropagation();openPanel('ch_web')">
+        <span class="ch-icon">🌐</span>
+        <div><div class="ch-text">Formularios Web</div><div class="ch-sub">SEO / SEM / Landing pages</div><div class="ch-hint">Clic para ver proceso →</div></div>
+      </div>
+      <div class="channel-item" style="border-color:#25D366" onclick="event.stopPropagation();openPanel('ch_wapp')">
+        <span class="ch-icon">💬</span>
+        <div><div class="ch-text">WhatsApp Business</div><div class="ch-sub">API oficial Meta</div><div class="ch-hint">Clic para ver proceso →</div></div>
+      </div>
+      <div class="channel-item" style="border-color:#E1306C" onclick="event.stopPropagation();openPanel('ch_rrss')">
+        <span class="ch-icon">📱</span>
+        <div><div class="ch-text">Redes Sociales</div><div class="ch-sub">Instagram · LinkedIn · Facebook · TikTok</div><div class="ch-hint">Clic para ver proceso →</div></div>
+      </div>
+      <div class="channel-item" style="border-color:#EA4335" onclick="event.stopPropagation();openPanel('ch_email')">
+        <span class="ch-icon">📧</span>
+        <div><div class="ch-text">Correo Electrónico</div><div class="ch-sub">Bandeja comercial corporativa</div><div class="ch-hint">Clic para ver proceso →</div></div>
+      </div>
+      <div class="channel-item" style="border-color:#F59E0B" onclick="event.stopPropagation();openPanel('ch_tel')">
+        <span class="ch-icon">📞</span>
+        <div><div class="ch-text">Llamada Telefónica</div><div class="ch-sub">Línea comercial · Call center</div><div class="ch-hint">Clic para ver proceso →</div></div>
+      </div>
+      <div class="channel-item" style="border-color:#8B5CF6" onclick="event.stopPropagation();openPanel('ch_ref')">
+        <span class="ch-icon">🤝</span>
+        <div><div class="ch-text">Referidos</div><div class="ch-sub">Clientes actuales · Aliados</div><div class="ch-hint">Clic para ver proceso →</div></div>
+      </div>
+    </div>
+    <div class="badges" style="margin-top:10px;">
+      <span class="badge badge-kpi">⏱ Meta: lead en CRM en &lt;30 seg</span>
+      <span class="badge badge-ia">🤖 IA: extracción automática de datos</span>
+    </div>
+    <div class="click-hint">Clic para ver mejores prácticas →</div>
+  </div>
+</div>
+<div class="conn"><div class="conn-line"></div><div class="conn-arrow"></div></div>
+
+<!-- 2. CLASIFICACIÓN IA -->
+<div class="flow-wrap">
+  <div class="stage" style="border-left-color:#7C3AED" onclick="openPanel('classify')">
+    <div class="sn">2</div>
+    <div class="sh">
+      <div class="si" style="background:#EDE9FE">🤖</div>
+      <div><div class="st">Clasificación Inteligente con IA</div><div class="ss">Identificación de empresa, servicio, país y valor estimado del negocio</div></div>
+    </div>
+    <div class="sb">El agente de IA analiza la información capturada y determina: <strong>(1) ¿A cuál empresa del grupo pertenece el lead?</strong> · <strong>(2) ¿Qué servicio o UEN específica?</strong> · <strong>(3) ¿Cuál es el valor estimado del negocio?</strong> para activar el filtro Big Deal · <strong>(4) Scoring de calidad del lead</strong> (MQL/SQL).</div>
+    <div class="badges">
+      <span class="badge badge-ia">🤖 Scoring predictivo: MQL vs SQL</span>
+      <span class="badge badge-ia">🤖 Clasificación multi-UEN automática</span>
+      <span class="badge badge-kpi">⏱ Tiempo: &lt;5 segundos</span>
+    </div>
+    <div class="click-hint">Clic para ver mejores prácticas →</div>
+  </div>
+</div>
+<div class="conn"><div class="conn-line"></div><div class="conn-arrow"></div></div>
+
+<!-- 3. FILTRO BIG DEAL — solo Quick Colombia -->
+<div id="bigdeal-section">
+<div class="decision">
+  <div class="flow-wrap">
+    <div class="stage" style="border-left-color:#D97706" onclick="openPanel('bigdeal')">
+      <div class="sn">3</div>
+      <div class="dec-label">⚡ Decisión crítica · Solo aplica a Quick Colombia</div>
+      <div class="sh">
+        <div class="si" style="background:#FEF3C7">💰</div>
+        <div><div class="st">Filtro Big Deal / Licitaciones <span style="font-size:.72rem;background:#FFFBEA;color:#1A1A1A;padding:2px 8px;border-radius:10px;font-weight:600;margin-left:6px;">🇨🇴 Quick Colombia</span></div><div class="ss">¿Valor estimado supera $100M COP/mes? · Aplica exclusivamente a Quick Colombia</div></div>
+      </div>
+      <div class="sb">Negocios de alto valor en Quick Colombia requieren atención del liderazgo comercial senior. <strong>Para todas las demás empresas del grupo, el Country Manager o Gerente gestiona la totalidad de sus leads directamente, sin importar el valor del negocio.</strong></div>
+      <div class="dec-branches">
+        <div class="dec-yes">
+          <strong>🔴 SÍ — Big Deal (&gt;$100M/mes COP)</strong>
+          Escala directamente a la <strong>Vicepresidente Comercial de Quick Colombia</strong>. Notificación inmediata por WhatsApp + resumen ejecutivo. Gestión personalizada de alto nivel.
+        </div>
+        <div class="dec-no">
+          <strong>🟢 NO — Negocio estándar</strong>
+          Continúa el flujo normal hacia el <strong>Enrutamiento por UEN</strong>. El Manager de la unidad recibe la notificación en tiempo real.
+        </div>
+      </div>
+      <div class="click-hint">Clic para ver mejores prácticas →</div>
+    </div>
+  </div>
+</div>
+<div class="conn"><div class="conn-line"></div><div class="conn-arrow"></div></div>
+</div><!-- /bigdeal-section -->
+
+<!-- 4. ROUTING -->
+<div class="routing-wrap" id="routing">
+  <div class="sn" style="position:relative;left:0;top:0;display:inline-flex;margin-bottom:12px;">4</div>
+  <div class="routing-title" id="routing-title">🏢 Enrutamiento por Empresa y Unidad de Negocio</div>
+  <div class="routing-sub" id="routing-sub">El agente IA asigna el lead al responsable correcto en tiempo real · Actualización bidireccional del CRM</div>
+
+  <div class="bigdeal-banner" id="bigdeal-banner">
+    <div class="bigdeal-icon">🏆</div>
+    <div class="bigdeal-text">
+      <strong>Big Deals / Licitaciones (&gt;$100M COP/mes) → Vicepresidente Comercial · Quick Colombia</strong>
+      <span>Notificación prioritaria · Gestión ejecutiva directa · SLA de contacto: &lt;15 minutos</span>
+    </div>
+  </div>
+
+  <div class="cgrid" id="cgrid">
+
+    <!-- QUICK COLOMBIA -->
+    <div class="ccard" id="c-qco" style="border-color:var(--qco)" onclick="openPanel('qco')">
+      <div class="cc-hdr" style="background:#FFC300;color:#1A1A1A">🇨🇴 Quick Colombia</div>
+      <div class="cc-body">
+        <div class="cc-mgr">4 Unidades Estratégicas de Negocio · Manager de cada UEN recibe lead en WhatsApp</div>
+        <div class="uen-grid">
+          <div class="uen"><div class="uen-name">🚛 Transporte Carga Masiva</div><div class="uen-mgr">Manager TCM → Equipo Comercial</div></div>
+          <div class="uen"><div class="uen-name">🏙️ Distribución Urbana</div><div class="uen-mgr">Manager DU → Equipo Comercial</div></div>
+          <div class="uen"><div class="uen-name">📦 Última Milla</div><div class="uen-mgr">Manager UM → Equipo Comercial</div></div>
+          <div class="uen"><div class="uen-name">🏭 Almacenamiento</div><div class="uen-mgr">Manager ALM → Equipo Comercial</div></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- QUICK USA -->
+    <div class="ccard" id="c-qusa" style="border-color:var(--qusa)" onclick="openPanel('qusa')">
+      <div class="cc-hdr" style="background:var(--qusa)">🇺🇸 Quick USA</div>
+      <div class="cc-body">
+        <div class="cc-mgr">Country Manager · Todos los servicios</div>
+        <ul class="svcs">
+          <li class="group">South Florida Carrier</li>
+          <li class="sub">Distribution</li>
+          <li class="sub">Airport Transfer</li>
+          <li class="sub">Dedicated Truck</li>
+          <li class="group">Domestic Freight</li>
+          <li class="sub">FTL · LTL · Drayage</li>
+          <li class="group">Warehouse</li>
+          <li class="sub">Fulfillment · Storage · 3PL</li>
+        </ul>
+      </div>
+    </div>
+
+    <!-- QUICK MEXICO -->
+    <div class="ccard" id="c-qmex" style="border-color:var(--qmex)" onclick="openPanel('qmex')">
+      <div class="cc-hdr" style="background:var(--qmex)">🇲🇽 Quick México</div>
+      <div class="cc-body">
+        <div class="cc-mgr">Country Manager · Todos los servicios</div>
+        <ul class="svcs">
+          <li>Transp. Terrestre de Carga</li>
+          <li>Distribución</li>
+          <li>Almacenamiento</li>
+          <li>Logística Última Milla</li>
+        </ul>
+      </div>
+    </div>
+
+    <!-- QUICK CHILE -->
+    <div class="ccard" id="c-qchl" style="border-color:var(--qchl)" onclick="openPanel('qchl')">
+      <div class="cc-hdr" style="background:var(--qchl)">🇨🇱 Quick Chile</div>
+      <div class="cc-body">
+        <div class="cc-mgr">Country Manager · Todos los servicios</div>
+        <ul class="svcs">
+          <li>Transp. Terrestre de Carga</li>
+          <li>Distribución Urbana y Nacional</li>
+          <li>Almacenamiento</li>
+          <li>Logística Última Milla</li>
+          <li>Mensajería</li>
+        </ul>
+      </div>
+    </div>
+
+    <!-- QUICK CLEAN -->
+    <div class="ccard" id="c-qclean" style="border-color:var(--qclean)" onclick="openPanel('qclean')">
+      <div class="cc-hdr" style="background:var(--qclean)">🧹 Quick Clean</div>
+      <div class="cc-body">
+        <div class="cc-mgr">Manager · Todos los servicios</div>
+        <ul class="svcs">
+          <li>Corporativo
+            <ul>
+              <li>Mantenimiento</li>
+              <li>Proyectos Especiales</li>
+              <li>Aseo y Cafetería</li>
+            </ul>
+          </li>
+          <li>Hogar</li>
+        </ul>
+      </div>
+    </div>
+
+    <!-- SMARTQUICK -->
+    <div class="ccard" id="c-smart" style="border-color:var(--smart)" onclick="openPanel('smart')">
+      <div class="cc-hdr" style="background:#1A1A1A;color:#FFC300">💡 SmartQuick</div>
+      <div class="cc-body">
+        <div class="cc-mgr">Manager · Todos los servicios</div>
+        <ul class="svcs">
+          <li>AI Logistics — TMS con Inteligencia Artificial</li>
+          <li>AI Tower — Torre de Control con IA</li>
+          <li>AI Workforce — Asignación de Recursos con IA</li>
+          <li>AI Studio — Agentes IA a Medida</li>
+        </ul>
+      </div>
+    </div>
+
+    <!-- BELAVENKO -->
+    <div class="ccard" id="c-bel" style="border-color:var(--bel)" onclick="openPanel('bel')">
+      <div class="cc-hdr" style="background:var(--bel)">⚖️ Belavenko</div>
+      <div class="cc-body">
+        <div class="cc-mgr">Manager · Todos los servicios</div>
+        <ul class="svcs">
+          <li>Asesoría UGPP</li>
+          <li>Servicios Jurídicos</li>
+          <li>Régimen de Insolvencia
+            <ul>
+              <li>Negociación de Deudas</li>
+              <li>Liquidación Patrimonial</li>
+            </ul>
+          </li>
+        </ul>
+      </div>
+    </div>
+
+  </div><!-- /cgrid -->
+
+  <!-- UEN DETAIL (se muestra al seleccionar una UEN del sub-menú) -->
+  <div class="uen-detail" id="uen-detail">
+
+    <!-- TCM -->
+    <div class="uen-detail-card" id="uen-tcm" style="display:none">
+      <div class="uen-detail-hdr">
+        <span class="uen-icon">🚛</span>
+        <div><h3>Transporte de Carga Masiva</h3><p>Manager TCM → Equipo Comercial TCM · Quick Colombia</p></div>
+      </div>
+      <div class="uen-detail-body">
+        <div class="uen-detail-mgr">📌 Lead recibido por el Manager de TCM vía WhatsApp → reasignado al ejecutivo del equipo comercial correspondiente</div>
+        <div class="svc-grid">
+          <div class="svc-chip">Carga Masiva Nacional</div>
+          <div class="svc-chip">Transporte Internacional Andino</div>
+          <div class="svc-chip">Cargas Especiales y/o de Proyecto</div>
+          <div class="svc-chip">Tránsito Aduanero (DTA)</div>
+          <div class="svc-chip">ITR</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- DISTRIBUCIÓN -->
+    <div class="uen-detail-card" id="uen-dis" style="display:none">
+      <div class="uen-detail-hdr">
+        <span class="uen-icon">🏙️</span>
+        <div><h3>Distribución Urbana</h3><p>Manager DU → Equipo Comercial DU · Quick Colombia</p></div>
+      </div>
+      <div class="uen-detail-body">
+        <div class="uen-detail-mgr">📌 Lead recibido por el Manager de Distribución Urbana vía WhatsApp → reasignado al ejecutivo correspondiente</div>
+        <div class="svc-grid">
+          <div class="svc-chip">Consumo Masivo</div>
+          <div class="svc-chip">Retail</div>
+          <div class="svc-chip">Farmacéutico y Health Care</div>
+          <div class="svc-chip">Venta Directa</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ÚLTIMA MILLA -->
+    <div class="uen-detail-card" id="uen-ulm" style="display:none">
+      <div class="uen-detail-hdr">
+        <span class="uen-icon">📦</span>
+        <div><h3>Logística de Última Milla</h3><p>Manager UM → Equipo Comercial UM · Quick Colombia</p></div>
+      </div>
+      <div class="uen-detail-body">
+        <div class="uen-detail-mgr">📌 Lead recibido por el Manager de Última Milla vía WhatsApp → reasignado al ejecutivo correspondiente</div>
+        <div class="svc-grid">
+          <div class="svc-chip">Mensajería Corporativa</div>
+          <div class="svc-chip">Domicilios</div>
+          <div class="svc-chip">Fulfillment</div>
+          <div class="svc-chip">Cross Docking</div>
+          <div class="svc-chip">Paqueteo</div>
+          <div class="svc-chip">Entregas Express</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ALMACENAMIENTO -->
+    <div class="uen-detail-card" id="uen-alm" style="display:none">
+      <div class="uen-detail-hdr">
+        <span class="uen-icon">🏭</span>
+        <div><h3>Almacenamiento</h3><p>Manager ALM → Equipo Comercial ALM · Quick Colombia</p></div>
+      </div>
+      <div class="uen-detail-body">
+        <div class="uen-detail-mgr">📌 Lead recibido por el Manager de Almacenamiento vía WhatsApp → reasignado al ejecutivo correspondiente</div>
+        <div class="svc-grid">
+          <div class="svc-chip">Fulfillment</div>
+          <div class="svc-chip">Storage</div>
+          <div class="svc-chip">3PL</div>
+        </div>
+      </div>
+    </div>
+
+  </div><!-- /uen-detail -->
+</div><!-- /routing-wrap -->
+
+<div class="conn"><div class="conn-line"></div><div class="conn-arrow"></div></div>
+
+<!-- 5. NOTIFICACIÓN -->
+<div class="flow-wrap">
+  <div class="stage" style="border-left-color:#16A34A" onclick="openPanel('notify')">
+    <div class="sn">5</div>
+    <div class="sh">
+      <div class="si" style="background:#DCFCE7">🔔</div>
+      <div><div class="st">Notificación en Tiempo Real al Manager / Responsable</div><div class="ss">WhatsApp · &lt;5 minutos desde la entrada del lead</div></div>
+    </div>
+    <div class="sb">El Manager correspondiente (o VP Comercial en Big Deals) recibe en su celular vía WhatsApp Business API: <strong>nombre del prospecto, empresa, servicio de interés, datos de contacto, valor estimado y scoring del lead</strong>. El CRM se actualiza simultáneamente. La notificación incluye botones de acción: <strong>Asignarme el lead</strong> o <strong>Asignar a Director Comercial</strong>.</div>
+    <div class="badges">
+      <span class="badge badge-warn">🚨 Meta crítica: &lt;5 min → 100x mejor conversión que a los 30 min</span>
+      <span class="badge badge-ia">🤖 Resumen automático del lead generado por IA</span>
+    </div>
+    <div class="click-hint">Clic para ver mejores prácticas →</div>
+  </div>
+</div>
+<div class="conn"><div class="conn-line"></div><div class="conn-arrow"></div></div>
+
+<!-- 5B. DECISIÓN ASIGNACIÓN -->
+<div class="decision">
+<div class="flow-wrap">
+  <div class="stage" style="border-left-color:#F59E0B" onclick="openPanel('assign')">
+    <div class="sn" style="background:#D97706">5B</div>
+    <div class="dec-label">⚡ Decisión inmediata · El Manager actúa desde su WhatsApp · Aplica a todas las empresas del grupo</div>
+    <div class="sh">
+      <div class="si" style="background:#FEF3C7">📲</div>
+      <div><div class="st">Decisión de Asignación del Lead — Manager vía WhatsApp</div><div class="ss">Envío simultáneo a Director Comercial + CRM · Timestamp de decisión registrado</div></div>
+    </div>
+    <div class="sb">El Manager tiene <strong>&lt;2 minutos</strong> para tomar la decisión de asignación directamente desde su WhatsApp. La acción genera simultáneamente dos flujos: <strong>1. WhatsApp al Director Comercial</strong> con el resumen completo del lead · <strong>2. CRM actualizado en tiempo real</strong> con el responsable asignado y el timestamp. El sistema registra el tiempo de decisión como KPI de desempeño del Manager.</div>
+    <div class="dec-branches">
+      <div class="dec-yes" style="background:#FFF7ED;border-color:#F97316;color:#7C2D12;">
+        <strong>🟠 OPCIÓN A — Manager se asigna el lead</strong>
+        El Manager contacta directamente al prospecto. Bot inicia contactabilidad en paralelo. El CRM registra la auto-asignación con timestamp.
+      </div>
+      <div class="dec-no">
+        <strong>🟢 OPCIÓN B — Asigna a Director Comercial</strong>
+        WhatsApp al Director con datos completos del lead. Director debe <strong>aceptar en &lt;3 min</strong>. La aceptación dispara automáticamente el bot de contactabilidad y el agendamiento.
+      </div>
+    </div>
+    <div class="badges" style="margin-top:10px;">
+      <span class="badge badge-warn">⏱ KPI Manager: decisión en &lt;2 min</span>
+      <span class="badge badge-warn">⏱ KPI Director: aceptación en &lt;3 min</span>
+      <span class="badge badge-ia">🤖 CRM actualizado en tiempo real — ambas opciones</span>
+    </div>
+    <div class="click-hint">Clic para ver mejores prácticas →</div>
+  </div>
+</div>
+</div>
+<div class="conn"><div class="conn-line"></div><div class="conn-arrow"></div></div>
+
+<!-- 6. CONTACTO INICIAL -->
+<div class="flow-wrap">
+  <div class="stage" style="border-left-color:#0EA5E9" onclick="openPanel('contact')">
+    <div class="sn">6</div>
+    <div class="sh">
+      <div class="si" style="background:#E0F2FE">💬</div>
+      <div><div class="st">Contacto Inicial Automatizado + Aceptación del Comercial</div><div class="ss">Bot IA activo · Director / Ejecutivo acepta y toma la conversación · CRM actualizado</div></div>
+    </div>
+    <div class="sb">Al aceptar el lead, el Director Comercial o Ejecutivo recibe: <strong>resumen completo, historial del canal de entrada y guión de apertura sugerido por IA</strong>. Simultáneamente el bot envía mensaje de bienvenida personalizado al prospecto. El Comercial debe <strong>confirmar la toma del lead en el CRM</strong> (un clic) para que el sistema registre el inicio formal del proceso de contactabilidad y agendamiento.</div>
+    <div class="badges">
+      <span class="badge badge-ia">🤖 Mensaje personalizado con datos del servicio consultado</span>
+      <span class="badge badge-tip">✅ Responder en &lt;1 min = 391% mejor conversión</span>
+      <span class="badge badge-kpi">📊 Lead-to-MQL objetivo: &gt;35%</span>
+      <span class="badge badge-warn">⏱ KPI: Lead-to-primer-contacto &lt;5 min total</span>
+    </div>
+    <div class="click-hint">Clic para ver mejores prácticas →</div>
+  </div>
+</div>
+<div class="conn"><div class="conn-line"></div><div class="conn-arrow"></div></div>
+
+<!-- 7. AGENDAMIENTO -->
+<div class="flow-wrap">
+  <div class="stage" style="border-left-color:#8B5CF6" onclick="openPanel('schedule')">
+    <div class="sn">7</div>
+    <div class="sh">
+      <div class="si" style="background:#EDE9FE">📅</div>
+      <div><div class="st">Agendamiento Automático</div><div class="ss">Integración real con Google Calendar / Outlook · Confirmación en &lt;60 seg</div></div>
+    </div>
+    <div class="sb">El agente verifica la agenda real del ejecutivo y gestiona el agendamiento: <strong>(1) Envía opciones de disponibilidad</strong> · <strong>(2) Prospecto selecciona horario</strong> · <strong>(3) Sistema bloquea la cita en el calendario</strong> · <strong>(4) Envía confirmación con link de reunión</strong> · <strong>(5) CRM actualiza estado de la oportunidad</strong>. Recordatorio automático 1h antes.</div>
+    <div class="badges">
+      <span class="badge badge-ia">🤖 Integración real Google Calendar / Outlook</span>
+      <span class="badge badge-kpi">⏱ De 3 días de back-and-forth → confirmación en &lt;5 min</span>
+    </div>
+    <div class="click-hint">Clic para ver mejores prácticas →</div>
+  </div>
+</div>
+<div class="conn"><div class="conn-line"></div><div class="conn-arrow"></div></div>
+
+<!-- 8. REUNIÓN -->
+<div class="flow-wrap">
+  <div class="stage" style="border-left-color:#F59E0B" onclick="openPanel('meeting')">
+    <div class="sn">8</div>
+    <div class="sh">
+      <div class="si" style="background:#FEF3C7">🤝</div>
+      <div><div class="st">Reunión Comercial</div><div class="ss">📹 Virtual (grabación + IA automática) · 🤝 Presencial (notas + recordatorios del sistema)</div></div>
+    </div>
+    <div class="sb">
+      <strong>📹 Modalidad Virtual:</strong> la plataforma detecta inicio de reunión → grabación + transcripción automática en tiempo real → al finalizar, la IA genera resumen y actualiza el CRM en &lt;15 min sin acción humana.<br><br>
+      <strong>🤝 Modalidad Presencial:</strong> no hay tecnología automática de registro. El Manager o Director Comercial toma notas durante la reunión. El sistema dispara <strong>3 recordatorios escalonados</strong> vía WhatsApp: ① 30 min post-reunión · ② 2 horas · ③ 24 horas — con obligación de cargar los 5 puntos clave: necesidad, volumen, compromisos, próximos pasos y contactos adicionales. El incumplimiento impacta el KPI de <em>Disciplina de CRM</em> del ejecutivo.<br><br>
+      El framework <strong>MEDDIC</strong> guía la calificación en ambas modalidades.
+    </div>
+    <div class="badges">
+      <span class="badge badge-ia">🤖 Virtual: transcripción + análisis de sentimiento en tiempo real</span>
+      <span class="badge badge-warn">📲 Presencial: recordatorio automático a los 30 min, 2h y 24h</span>
+      <span class="badge badge-tip">✅ Framework MEDDIC para calificación estructurada</span>
+      <span class="badge badge-kpi">📊 SQL-to-Opportunity objetivo: &gt;45%</span>
+      <span class="badge badge-kpi">⏱ KPI: info presencial en CRM en &lt;2h post-reunión</span>
+    </div>
+    <div class="click-hint">Clic para ver mejores prácticas →</div>
+  </div>
+</div>
+<div class="conn"><div class="conn-line"></div><div class="conn-arrow"></div></div>
+
+<!-- 9. POST-REUNIÓN -->
+<div class="flow-wrap">
+  <div class="stage" style="border-left-color:#0891B2" onclick="openPanel('postmeeting')">
+    <div class="sn">9</div>
+    <div class="sh">
+      <div class="si" style="background:#CFFAFE">📝</div>
+      <div><div class="st">Resumen Post-Reunión con IA</div><div class="ss">Hallazgos · Compromisos · Próximos pasos → CRM + Tareas internas activadas</div></div>
+    </div>
+    <div class="sb">La IA genera en los primeros <strong>15 minutos post-reunión</strong>: <strong>(1) Resumen estructurado</strong> · <strong>(2) Actualización automática del CRM</strong> · <strong>(3) Activación de tareas internas</strong> · <strong>(4) Email de seguimiento personalizado</strong> al prospecto en &lt;60 minutos con recap y próximos pasos.</div>
+    <div class="badges">
+      <span class="badge badge-ia">🤖 Resumen IA desde transcripción o inputs del ejecutivo</span>
+      <span class="badge badge-tip">✅ Follow-up en &lt;60 min = +20% conversión demo-to-close</span>
+    </div>
+    <div class="click-hint">Clic para ver mejores prácticas →</div>
+  </div>
+</div>
+<div class="conn"><div class="conn-line"></div><div class="conn-arrow"></div></div>
+
+<!-- 10. PROPUESTA -->
+<div class="flow-wrap">
+  <div class="stage" style="border-left-color:#7C3AED" onclick="openPanel('proposal')">
+    <div class="sn">10</div>
+    <div class="sh">
+      <div class="si" style="background:#EDE9FE">📋</div>
+      <div><div class="st">Generación Asistida de Propuesta Comercial</div><div class="ss">IA genera borrador personalizado · Ejecutivo revisa y ajusta en ~5 min</div></div>
+    </div>
+    <div class="sb">A partir del resumen de reunión, plantillas corporativas y datos del CRM, la IA genera el <strong>primer borrador de propuesta personalizada</strong>: problema del cliente, solución mapeada, pricing transparente y timeline realista. El ejecutivo revisa y ajusta en ~5 minutos. La propuesta incluye <strong>tracking de visualización</strong>: quién la abrió, tiempo de lectura y secciones revisadas.</div>
+    <div class="badges">
+      <span class="badge badge-ia">🤖 IA genera borrador desde datos de CRM + reunión</span>
+      <span class="badge badge-kpi">⏱ Meta: propuesta lista en &lt;48h post-reunión</span>
+      <span class="badge badge-tip">✅ Propuestas personalizadas = +57% conversión</span>
+    </div>
+    <div class="click-hint">Clic para ver mejores prácticas →</div>
+  </div>
+</div>
+<div class="conn"><div class="conn-line"></div><div class="conn-arrow"></div></div>
+
+<!-- 11. REVISIÓN Y ENVÍO -->
+<div class="flow-wrap">
+  <div class="stage" style="border-left-color:#16A34A" onclick="openPanel('send')">
+    <div class="sn">11</div>
+    <div class="sh">
+      <div class="si" style="background:#DCFCE7">✅</div>
+      <div><div class="st">Revisión Interna, Aprobación y Envío Formal</div><div class="ss">Flujo de aprobación digital · Digital Sales Room · Firma electrónica</div></div>
+    </div>
+    <div class="sb">La propuesta pasa por <strong>flujo de aprobación interna en línea</strong>: Manager revisa → aprueba con un clic → el sistema envía formalmente con firma digital y link trazado. Se activa un <strong>Digital Sales Room</strong>: espacio colaborativo donde cliente y ejecutivo comentan, ajustan y alinean scope. Notificación al ejecutivo cuando el cliente abre la propuesta.</div>
+    <div class="badges">
+      <span class="badge badge-ia">🤖 Notificación cuando el cliente abre la propuesta</span>
+      <span class="badge badge-kpi">📊 Opportunity-to-Close objetivo: &gt;30%</span>
+      <span class="badge badge-tip">✅ Digital Sales Room: +25% cierre (benchmark Zoom)</span>
+    </div>
+    <div class="click-hint">Clic para ver mejores prácticas →</div>
+  </div>
+</div>
+<div class="conn"><div class="conn-line"></div><div class="conn-arrow"></div></div>
+
+<!-- 12. SEGUIMIENTO -->
+<div class="flow-wrap">
+  <div class="stage" style="border-left-color:#DC2626" onclick="openPanel('followup')">
+    <div class="sn">12</div>
+    <div class="sh">
+      <div class="si" style="background:#FEE2E2">📊</div>
+      <div><div class="st">Seguimiento Activo y Trazabilidad Total</div><div class="ss">CRM monitorea estado · Secuencia multi-canal · Dashboard en tiempo real</div></div>
+    </div>
+    <div class="sb">El sistema ejecuta <strong>seguimiento proactivo automatizado</strong>: sin respuesta en 48h → reminder WhatsApp · en 72h → mensaje LinkedIn · en 5 días → llamada programada. El CRM actualiza el <strong>forecast de ventas</strong> y notifica al manager sobre oportunidades en riesgo. <strong>Dashboard en tiempo real</strong> para todas las empresas del grupo.</div>
+    <div class="badges">
+      <span class="badge badge-kpi">📈 Secuencia 5 toques = 2x tasa de respuesta</span>
+      <span class="badge badge-ia">🤖 Forecasting automático con IA predictiva</span>
+      <span class="badge badge-tip">✅ Trazabilidad de punta a punta por empresa y UEN</span>
+    </div>
+    <div class="click-hint">Clic para ver mejores prácticas →</div>
+  </div>
+</div>
+
+<!-- KPI BAR -->
+<div class="kpi-bar">
+  <h3>📊 KPIs del Sistema — Velocidad, Conversión y Disciplina · Grupo Quick 2025-2026</h3>
+
+  <div style="font-size:.72rem;font-weight:700;text-transform:uppercase;letter-spacing:.5px;opacity:.7;margin-bottom:10px;">⚡ Velocidad de Contactabilidad — El indicador más crítico del sistema</div>
+  <div class="kgrid" style="margin-bottom:18px;">
+    <div class="ki" style="border:1px solid rgba(255,255,255,.25)"><div class="ki-n" style="color:#FCD34D">&lt;30 seg</div><div class="ki-d">Lead → CRM · Clasificación y enrutamiento automático</div></div>
+    <div class="ki" style="border:1px solid rgba(255,255,255,.25)"><div class="ki-n" style="color:#FCD34D">&lt;2 min</div><div class="ki-d">Manager → Decisión de asignación desde WhatsApp</div></div>
+    <div class="ki" style="border:1px solid rgba(255,255,255,.25)"><div class="ki-n" style="color:#FCD34D">&lt;3 min</div><div class="ki-d">Director Comercial → Aceptación del lead</div></div>
+    <div class="ki" style="border:1px solid rgba(255,255,255,.25)"><div class="ki-n" style="color:#FCD34D">&lt;5 min</div><div class="ki-d">Lead → Primer contacto al prospecto · 100× mejor conversión vs. 30 min</div></div>
+    <div class="ki" style="border:1px solid rgba(255,255,255,.25)"><div class="ki-n" style="color:#FCD34D">&lt;2 min</div><div class="ki-d">Leads referidos → Contacto (SLA especial vs. 5 min lead frío)</div></div>
+    <div class="ki" style="border:1px solid rgba(255,255,255,.25)"><div class="ki-n" style="color:#FCD34D">&lt;2h</div><div class="ki-d">Info reunión presencial → CRM · Máx. plazo con recordatorios</div></div>
+    <div class="ki" style="border:1px solid rgba(255,255,255,.25)"><div class="ki-n" style="color:#FCD34D">&lt;15 min</div><div class="ki-d">Reunión virtual → Resumen IA + CRM actualizado</div></div>
+    <div class="ki" style="border:1px solid rgba(255,255,255,.25)"><div class="ki-n" style="color:#FCD34D">&lt;60 min</div><div class="ki-d">Post-reunión → Follow-up al prospecto</div></div>
+  </div>
+
+  <div style="font-size:.72rem;font-weight:700;text-transform:uppercase;letter-spacing:.5px;opacity:.7;margin-bottom:10px;">📈 Conversión y Rendimiento del Pipeline</div>
+  <div class="kgrid" style="margin-bottom:18px;">
+    <div class="ki"><div class="ki-n">280%</div><div class="ki-d">ROI promedio de automatización IA en el primer año</div></div>
+    <div class="ki"><div class="ki-n">+57%</div><div class="ki-d">Conversión con propuestas personalizadas vs. genéricas</div></div>
+    <div class="ki"><div class="ki-n">+25%</div><div class="ki-d">Mejora en cierre con Digital Sales Rooms</div></div>
+    <div class="ki"><div class="ki-n">&gt;95%</div><div class="ki-d">Meta de leads clasificados y enrutados correctamente</div></div>
+    <div class="ki"><div class="ki-n">&lt;48h</div><div class="ki-d">Meta de propuesta entregada post-reunión</div></div>
+    <div class="ki"><div class="ki-n">5 toques</div><div class="ki-d">Email×2 + LinkedIn×2 + Llamada×1 = 2× respuesta</div></div>
+    <div class="ki"><div class="ki-n">100%</div><div class="ki-d">Leads con seguimiento registrado en CRM</div></div>
+    <div class="ki"><div class="ki-n">&gt;20%</div><div class="ki-d">Meta de leads referidos sobre total mensual</div></div>
+  </div>
+
+  <div style="font-size:.72rem;font-weight:700;text-transform:uppercase;letter-spacing:.5px;opacity:.7;margin-bottom:10px;">🏆 KPIs de Evaluación — Managers · Directores Comerciales · Sistema</div>
+  <div class="kgrid">
+    <div class="ki" style="border:1px solid rgba(255,255,255,.2)"><div class="ki-n" style="color:#86EFAC">&gt;95%</div><div class="ki-d">Decisiones de asignación en &lt;2 min · KPI del Manager</div></div>
+    <div class="ki" style="border:1px solid rgba(255,255,255,.2)"><div class="ki-n" style="color:#86EFAC">&gt;95%</div><div class="ki-d">Aceptaciones de lead en &lt;3 min · KPI del Director Comercial</div></div>
+    <div class="ki" style="border:1px solid rgba(255,255,255,.2)"><div class="ki-n" style="color:#86EFAC">100%</div><div class="ki-d">Reuniones presenciales con info en CRM · Disciplina de CRM</div></div>
+    <div class="ki" style="border:1px solid rgba(255,255,255,.2)"><div class="ki-n" style="color:#86EFAC">&gt;35%</div><div class="ki-d">Lead-to-MQL · Calidad de clasificación del sistema IA</div></div>
+    <div class="ki" style="border:1px solid rgba(255,255,255,.2)"><div class="ki-n" style="color:#86EFAC">&gt;45%</div><div class="ki-d">SQL-to-Opportunity · Efectividad de la reunión comercial</div></div>
+    <div class="ki" style="border:1px solid rgba(255,255,255,.2)"><div class="ki-n" style="color:#86EFAC">&gt;30%</div><div class="ki-d">Opportunity-to-Close · Meta de cierre por ejecutivo</div></div>
+    <div class="ki" style="border:1px solid rgba(255,255,255,.2)"><div class="ki-n" style="color:#86EFAC">0%</div><div class="ki-d">Leads sin respuesta en &gt;15 min · Tolerancia cero del sistema</div></div>
+    <div class="ki" style="border:1px solid rgba(255,255,255,.2)"><div class="ki-n" style="color:#86EFAC">&gt;60%</div><div class="ki-d">Citas agendadas desde primer contacto · Efectividad del bot</div></div>
+  </div>
+</div>
+
+<!-- BP STRIP -->
+<div class="bp-strip">
+  <div class="bps-title">🌍 Mejores Prácticas Globales Incorporadas al Modelo</div>
+  <div class="bps-grid">
+    <div class="bps-item" style="border-top-color:#0284C7">
+      <h4>⚡ Speed-to-Lead</h4>
+      <p>Responder al lead en <strong>menos de 5 minutos</strong> genera 100× mejor conversión que a los 30 min. La automatización elimina esta fricción completamente, independientemente del canal de entrada.</p>
+    </div>
+    <div class="bps-item" style="border-top-color:#7C3AED">
+      <h4>🤖 Enrutamiento Inteligente</h4>
+      <p>El enrutamiento por <strong>historial de desempeño</strong> mejora la calidad del match en 40%. El sistema aprende qué ejecutivo cierra mejor con qué tipo de cliente y enruta inteligentemente.</p>
+    </div>
+    <div class="bps-item" style="border-top-color:#16A34A">
+      <h4>📅 Calendar Automation</h4>
+      <p>Eliminar el back-and-forth ahorra <strong>15 minutos por reunión</strong>. Con 50 reuniones/mes = 12.5 horas liberadas por ejecutivo para prospección activa.</p>
+    </div>
+    <div class="bps-item" style="border-top-color:#F59E0B">
+      <h4>🎯 Framework MEDDIC</h4>
+      <p>Las mejores empresas B2B usan MEDDIC: <strong>M</strong>étricas · <strong>E</strong>conomic Buyer · <strong>D</strong>ecision Criteria · <strong>D</strong>ecision Process · <strong>I</strong>dentify Pain · <strong>C</strong>hampion. Mejora conversión de 18% a 30%+.</p>
+    </div>
+    <div class="bps-item" style="border-top-color:#DC2626">
+      <h4>📋 Propuestas IA-First</h4>
+      <p>El 65% del tiempo de un vendedor va en tareas administrativas. La <strong>generación asistida con IA</strong> reduce el tiempo de propuesta de 45 min a 5 min. Las propuestas personalizadas suben la conversión en 57%.</p>
+    </div>
+    <div class="bps-item" style="border-top-color:#0891B2">
+      <h4>🔁 Multi-Touch Follow-up</h4>
+      <p>Una secuencia de <strong>5 toques coordinados</strong> (2 emails + 2 LinkedIn + 1 llamada) dobla la tasa de respuesta. El sistema automatiza los triggers basado en el comportamiento del prospecto.</p>
+    </div>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════════════════════════ -->
+<!-- SECCIÓN: FORMULARIOS DE CAPTURA                          -->
+<!-- ══════════════════════════════════════════════════════════ -->
+<div style="margin-top:32px;" id="forms-section">
+  <div style="background:#fff;border-radius:16px;padding:28px 24px;box-shadow:0 2px 14px rgba(0,0,0,.07);">
+    <div style="display:flex;align-items:center;gap:12px;margin-bottom:6px;">
+      <div style="font-size:1.5rem;">📋</div>
+      <div>
+        <div style="font-size:1.1rem;font-weight:800;color:#0f172a;">Formularios de Captura — Grupo Quick</div>
+        <div style="font-size:.78rem;color:#64748b;margin-top:2px;">Formulario corto SEM · Formulario completo SEO/B2B · Preguntas por UEN · Aplica a todas las empresas del grupo</div>
+      </div>
+    </div>
+
+    <!-- TABS -->
+    <div style="display:flex;gap:8px;margin:20px 0 22px;flex-wrap:wrap;">
+      <button onclick="showForm('sem')" id="tab-sem" style="padding:8px 18px;border-radius:20px;border:2px solid #0284C7;background:#0284C7;color:#fff;font-size:.8rem;font-weight:700;cursor:pointer;">⚡ Formulario Corto — SEM / Landings</button>
+      <button onclick="showForm('seo')" id="tab-seo" style="padding:8px 18px;border-radius:20px;border:2px solid #7C3AED;background:transparent;color:#7C3AED;font-size:.8rem;font-weight:700;cursor:pointer;">📊 Formulario Completo — SEO / B2B / RFP</button>
+    </div>
+
+    <!-- FORM SEM -->
+    <div id="form-sem">
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:20px;align-items:start;">
+        <div>
+          <div style="background:#EFF6FF;border-radius:10px;padding:14px 16px;margin-bottom:14px;border-left:4px solid #0284C7;">
+            <div style="font-size:.78rem;font-weight:700;color:#0284C7;margin-bottom:4px;">⚡ FORMULARIO CORTO — Alta Conversión</div>
+            <div style="font-size:.72rem;color:#475569;">Campaña SEM · Google Ads · Landings específicas por servicio · Máx. 8 campos · Tiempo de llenado: &lt;90 segundos</div>
+          </div>
+          <div style="display:flex;flex-direction:column;gap:10px;">
+            <div style="background:#F8FAFC;border-radius:8px;padding:10px 14px;border-left:3px solid #0284C7;">
+              <div style="font-size:.75rem;font-weight:700;color:#0f172a;">1. Nombre completo <span style="color:#DC2626;">*</span></div>
+              <div style="font-size:.68rem;color:#94A3B8;margin-top:3px;background:#fff;border:1px solid #e2e8f0;border-radius:5px;padding:5px 8px;">Tu nombre...</div>
+            </div>
+            <div style="background:#F8FAFC;border-radius:8px;padding:10px 14px;border-left:3px solid #0284C7;">
+              <div style="font-size:.75rem;font-weight:700;color:#0f172a;">2. Empresa <span style="color:#DC2626;">*</span></div>
+              <div style="font-size:.68rem;color:#94A3B8;margin-top:3px;background:#fff;border:1px solid #e2e8f0;border-radius:5px;padding:5px 8px;">Nombre de tu empresa...</div>
+            </div>
+            <div style="background:#F8FAFC;border-radius:8px;padding:10px 14px;border-left:3px solid #0284C7;">
+              <div style="font-size:.75rem;font-weight:700;color:#0f172a;">3. Correo corporativo <span style="color:#DC2626;">*</span></div>
+              <div style="font-size:.68rem;color:#94A3B8;margin-top:3px;background:#fff;border:1px solid #e2e8f0;border-radius:5px;padding:5px 8px;">correo@empresa.com</div>
+            </div>
+            <div style="background:#F8FAFC;border-radius:8px;padding:10px 14px;border-left:3px solid #0284C7;">
+              <div style="font-size:.75rem;font-weight:700;color:#0f172a;">4. WhatsApp / Celular <span style="color:#DC2626;">*</span></div>
+              <div style="font-size:.68rem;color:#94A3B8;margin-top:3px;background:#fff;border:1px solid #e2e8f0;border-radius:5px;padding:5px 8px;">+57 300 000 0000</div>
+            </div>
+            <div style="background:#F8FAFC;border-radius:8px;padding:10px 14px;border-left:3px solid #0284C7;">
+              <div style="font-size:.75rem;font-weight:700;color:#0f172a;">5. ¿Qué servicio necesitas? <span style="color:#DC2626;">*</span></div>
+              <span class="multi-hint">☑ Puedes marcar más de una opción</span>
+              <div style="display:flex;flex-wrap:wrap;gap:5px;margin-top:4px;">
+                <span class="chk-opt" onclick="this.classList.toggle('chk-on')"><span class="chk-icon"></span>📦 Última milla</span>
+                <span class="chk-opt" onclick="this.classList.toggle('chk-on')"><span class="chk-icon"></span>🏙️ Distribución / First Mile</span>
+                <span class="chk-opt" onclick="this.classList.toggle('chk-on')"><span class="chk-icon"></span>🚛 Carga nacional / Long Haul</span>
+                <span class="chk-opt" onclick="this.classList.toggle('chk-on')"><span class="chk-icon"></span>🏭 Almacenamiento</span>
+                <span class="chk-opt" onclick="this.classList.toggle('chk-on')"><span class="chk-icon"></span>🔗 Varios / Integral</span>
+              </div>
+            </div>
+            <div style="background:#FFF7ED;border-radius:8px;padding:10px 14px;border-left:3px solid #F97316;">
+              <div style="font-size:.75rem;font-weight:700;color:#0f172a;">6. ¿Es cotización o proceso formal? <span style="color:#DC2626;">*</span></div>
+              <div style="display:flex;flex-wrap:wrap;gap:5px;margin-top:6px;">
+                <span style="padding:3px 10px;background:#FFF7ED;border:1.5px solid #F97316;border-radius:12px;font-size:.67rem;color:#7C2D12;font-weight:600;">📄 Cotización</span>
+                <span style="padding:3px 10px;background:#FEF9C3;border:1.5px solid #EAB308;border-radius:12px;font-size:.67rem;color:#713F12;font-weight:600;">📋 RPI</span>
+                <span style="padding:3px 10px;background:#F0FDF4;border:1.5px solid #22C55E;border-radius:12px;font-size:.67rem;color:#14532D;font-weight:600;">📑 RFQ</span>
+                <span style="padding:3px 10px;background:#EFF6FF;border:1.5px solid #3B82F6;border-radius:12px;font-size:.67rem;color:#1E3A5F;font-weight:600;">🏛️ RFP</span>
+              </div>
+            </div>
+            <div style="background:#F8FAFC;border-radius:8px;padding:10px 14px;border-left:3px solid #0284C7;">
+              <div style="font-size:.75rem;font-weight:700;color:#0f172a;">7. ¿Cuándo necesitas iniciar? <span style="color:#DC2626;">*</span></div>
+              <div style="display:flex;flex-wrap:wrap;gap:5px;margin-top:6px;">
+                <span style="padding:3px 9px;background:#FEF2F2;border-radius:12px;font-size:.67rem;color:#991B1B;font-weight:600;">🔴 Inmediato</span>
+                <span style="padding:3px 9px;background:#FEF9C3;border-radius:12px;font-size:.67rem;color:#713F12;font-weight:600;">🟡 En 15 días</span>
+                <span style="padding:3px 9px;background:#F0FDF4;border-radius:12px;font-size:.67rem;color:#14532D;font-weight:600;">🟢 En 30 días</span>
+                <span style="padding:3px 9px;background:#F8FAFC;border-radius:12px;font-size:.67rem;color:#475569;font-weight:600;">⬜ Más adelante</span>
+              </div>
+            </div>
+            <div style="background:#F8FAFC;border-radius:8px;padding:10px 14px;border-left:3px solid #94A3B8;">
+              <div style="display:flex;align-items:flex-start;gap:8px;">
+                <div style="width:14px;height:14px;border:2px solid #0284C7;border-radius:3px;margin-top:2px;flex-shrink:0;background:#0284C7;"></div>
+                <div style="font-size:.68rem;color:#475569;">Acepto el tratamiento de mis datos personales según la <span style="color:#0284C7;font-weight:600;">política de privacidad</span> de Grupo Quick.</div>
+              </div>
+            </div>
+            <div style="background:linear-gradient(135deg,#0D3B66,#1d5ea8);border-radius:8px;padding:11px;text-align:center;cursor:pointer;">
+              <span style="font-size:.82rem;font-weight:800;color:#fff;">🚀 Solicitar cotización ahora</span>
+            </div>
+          </div>
+        </div>
+        <div>
+          <div style="background:#EFF6FF;border-radius:10px;padding:14px 16px;margin-bottom:14px;border-left:4px solid #0284C7;">
+            <div style="font-size:.78rem;font-weight:700;color:#0284C7;margin-bottom:8px;">💡 Por qué 8 campos y no más</div>
+            <div style="font-size:.72rem;color:#475569;line-height:1.6;">
+              Cada campo adicional reduce la conversión un <strong>11%</strong>. Un formulario de 10 campos convierte la mitad que uno de 5. La filosofía del formulario corto es: capturar lo mínimo indispensable para que el equipo comercial pueda iniciar la conversación. El resto se captura en la llamada o reunión.<br><br>
+              <strong>Campos eliminados del formulario corto vs. largo:</strong><br>
+              · Cargo → se pregunta en la llamada<br>
+              · Ciudad/país → la IA lo infiere o pregunta el bot<br>
+              · Descripción libre → se reemplaza por categorías simples<br>
+              · Preguntas de calificación → son para el formulario largo
+            </div>
+          </div>
+          <div style="background:#F0FDF4;border-radius:10px;padding:14px 16px;border-left:4px solid #16A34A;">
+            <div style="font-size:.78rem;font-weight:700;color:#16A34A;margin-bottom:8px;">📲 Flujo post-envío del formulario corto</div>
+            <div style="font-size:.72rem;color:#475569;line-height:1.6;">
+              <strong>1.</strong> Lead entra al CRM en &lt;30 seg<br>
+              <strong>2.</strong> Auto-respuesta WhatsApp + email en &lt;60 seg<br>
+              <strong>3.</strong> Manager notificado en &lt;5 min<br>
+              <strong>4.</strong> Manager decide asignación en &lt;2 min<br>
+              <strong>5.</strong> Bot inicia contactabilidad y agendamiento
+            </div>
+          </div>
+          <div style="background:#FFFBEB;border-radius:10px;padding:14px 16px;margin-top:14px;border-left:4px solid #D97706;">
+            <div style="font-size:.78rem;font-weight:700;color:#D97706;margin-bottom:8px;">⚙️ Adaptación por empresa del grupo</div>
+            <div style="font-size:.72rem;color:#475569;line-height:1.6;">
+              · 🇺🇸 <strong>Quick USA:</strong> formulario en inglés, campo "State/City (FL)"<br>
+              · 🇲🇽 <strong>Quick México:</strong> terminología local (CEDIS, SCT)<br>
+              · 🇨🇱 <strong>Quick Chile:</strong> incluye opción "Mensajería" en servicios<br>
+              · 🧹 <strong>Quick Clean:</strong> servicios: Corporativo / Hogar<br>
+              · 💡 <strong>SmartQuick:</strong> servicios: AI Logistics / AI Tower / AI Workforce / AI Studio<br>
+              · ⚖️ <strong>Belavenko:</strong> servicios: UGPP / Jurídico / Insolvencia · confidencialidad máxima
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- FORM SEO/B2B -->
+    <div id="form-seo" style="display:none;">
+      <div style="background:#F5F3FF;border-radius:10px;padding:14px 16px;margin-bottom:18px;border-left:4px solid #7C3AED;">
+        <div style="font-size:.78rem;font-weight:700;color:#7C3AED;margin-bottom:4px;">📊 FORMULARIO COMPLETO — SEO / B2B / Cuentas Complejas / RFP</div>
+        <div style="font-size:.72rem;color:#475569;">Para tráfico orgánico de alta intención · Cuentas B2B con proceso de compra formal · Solicitudes RPI / RFQ / RFP · Tiempo estimado de llenado: 4–6 minutos</div>
+      </div>
+
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px;">
+
+        <!-- COLUMNA IZQUIERDA -->
+        <div style="display:flex;flex-direction:column;gap:10px;">
+
+          <div style="font-size:.7rem;font-weight:800;text-transform:uppercase;letter-spacing:.5px;color:#7C3AED;padding:6px 0;">👤 Sección 1 — Identificación</div>
+
+          <div style="background:#F8FAFC;border-radius:8px;padding:10px 14px;border-left:3px solid #7C3AED;">
+            <div style="font-size:.74rem;font-weight:700;color:#0f172a;">1. Nombre completo <span style="color:#DC2626;">*</span></div>
+            <div style="font-size:.67rem;color:#94A3B8;margin-top:3px;background:#fff;border:1px solid #e2e8f0;border-radius:5px;padding:5px 8px;">Tu nombre completo...</div>
+          </div>
+
+          <div style="background:#F8FAFC;border-radius:8px;padding:10px 14px;border-left:3px solid #7C3AED;">
+            <div style="font-size:.74rem;font-weight:700;color:#0f172a;">2. Empresa <span style="color:#DC2626;">*</span></div>
+            <div style="font-size:.67rem;color:#94A3B8;margin-top:3px;background:#fff;border:1px solid #e2e8f0;border-radius:5px;padding:5px 8px;">Nombre de tu empresa...</div>
+          </div>
+
+          <div style="background:#F8FAFC;border-radius:8px;padding:10px 14px;border-left:3px solid #7C3AED;">
+            <div style="font-size:.74rem;font-weight:700;color:#0f172a;">3. Industria</div>
+            <div style="display:flex;flex-wrap:wrap;gap:4px;margin-top:6px;">
+              <span style="padding:2px 8px;background:#F1F5F9;border-radius:10px;font-size:.64rem;color:#475569;border:1px solid #e2e8f0;">Retail</span>
+              <span style="padding:2px 8px;background:#F1F5F9;border-radius:10px;font-size:.64rem;color:#475569;border:1px solid #e2e8f0;">Consumo masivo</span>
+              <span style="padding:2px 8px;background:#F1F5F9;border-radius:10px;font-size:.64rem;color:#475569;border:1px solid #e2e8f0;">Farmacéutico</span>
+              <span style="padding:2px 8px;background:#F1F5F9;border-radius:10px;font-size:.64rem;color:#475569;border:1px solid #e2e8f0;">E-commerce</span>
+              <span style="padding:2px 8px;background:#F1F5F9;border-radius:10px;font-size:.64rem;color:#475569;border:1px solid #e2e8f0;">Alimentos</span>
+              <span style="padding:2px 8px;background:#F1F5F9;border-radius:10px;font-size:.64rem;color:#475569;border:1px solid #e2e8f0;">Tecnología</span>
+              <span style="padding:2px 8px;background:#F1F5F9;border-radius:10px;font-size:.64rem;color:#475569;border:1px solid #e2e8f0;">Manufactura</span>
+              <span style="padding:2px 8px;background:#F1F5F9;border-radius:10px;font-size:.64rem;color:#475569;border:1px solid #e2e8f0;">Otro</span>
+            </div>
+          </div>
+
+          <div style="background:#F8FAFC;border-radius:8px;padding:10px 14px;border-left:3px solid #7C3AED;">
+            <div style="font-size:.74rem;font-weight:700;color:#0f172a;">4. Rol en la decisión</div>
+            <div style="display:flex;flex-wrap:wrap;gap:4px;margin-top:6px;">
+              <span style="padding:2px 8px;background:#F1F5F9;border-radius:10px;font-size:.64rem;color:#475569;border:1px solid #e2e8f0;">Decisor final</span>
+              <span style="padding:2px 8px;background:#F1F5F9;border-radius:10px;font-size:.64rem;color:#475569;border:1px solid #e2e8f0;">Influenciador</span>
+              <span style="padding:2px 8px;background:#F1F5F9;border-radius:10px;font-size:.64rem;color:#475569;border:1px solid #e2e8f0;">Operativo</span>
+              <span style="padding:2px 8px;background:#F1F5F9;border-radius:10px;font-size:.64rem;color:#475569;border:1px solid #e2e8f0;">Compras</span>
+              <span style="padding:2px 8px;background:#F1F5F9;border-radius:10px;font-size:.64rem;color:#475569;border:1px solid #e2e8f0;">Otro</span>
+            </div>
+          </div>
+
+          <div style="background:#F8FAFC;border-radius:8px;padding:10px 14px;border-left:3px solid #7C3AED;">
+            <div style="font-size:.74rem;font-weight:700;color:#0f172a;">5. Correo corporativo <span style="color:#DC2626;">*</span></div>
+            <div style="font-size:.67rem;color:#94A3B8;margin-top:3px;background:#fff;border:1px solid #e2e8f0;border-radius:5px;padding:5px 8px;">correo@empresa.com</div>
+          </div>
+
+          <div style="background:#F8FAFC;border-radius:8px;padding:10px 14px;border-left:3px solid #7C3AED;">
+            <div style="font-size:.74rem;font-weight:700;color:#0f172a;">6. WhatsApp / Teléfono <span style="color:#DC2626;">*</span></div>
+            <div style="font-size:.67rem;color:#94A3B8;margin-top:3px;background:#fff;border:1px solid #e2e8f0;border-radius:5px;padding:5px 8px;">+57 300 000 0000</div>
+          </div>
+
+          <div style="background:#F8FAFC;border-radius:8px;padding:10px 14px;border-left:3px solid #7C3AED;">
+            <div style="font-size:.74rem;font-weight:700;color:#0f172a;">7. País y ciudad de operación <span style="color:#DC2626;">*</span></div>
+            <div style="font-size:.67rem;color:#94A3B8;margin-top:3px;background:#fff;border:1px solid #e2e8f0;border-radius:5px;padding:5px 8px;">Ej: Colombia – Bogotá</div>
+          </div>
+
+          <div style="font-size:.7rem;font-weight:800;text-transform:uppercase;letter-spacing:.5px;color:#0284C7;padding:6px 0;">📦 Sección 2 — Necesidad Logística</div>
+
+          <div style="background:#EFF6FF;border-radius:8px;padding:10px 14px;border-left:3px solid #0284C7;">
+            <div style="font-size:.74rem;font-weight:700;color:#0f172a;">8. ¿Qué servicio te interesa? <span style="color:#DC2626;">*</span></div>
+            <span class="multi-hint">☑ Puedes marcar más de una opción</span>
+            <div style="display:flex;flex-wrap:wrap;gap:5px;margin-top:4px;">
+              <span class="chk-opt" onclick="this.classList.toggle('chk-on')"><span class="chk-icon"></span>📦 Última milla</span>
+              <span class="chk-opt" onclick="this.classList.toggle('chk-on')"><span class="chk-icon"></span>🏙️ First Mile / Distribución</span>
+              <span class="chk-opt" onclick="this.classList.toggle('chk-on')"><span class="chk-icon"></span>🚛 Long Haul / Carga nacional</span>
+              <span class="chk-opt" onclick="this.classList.toggle('chk-on')"><span class="chk-icon"></span>🏭 Warehouse</span>
+              <span class="chk-opt" onclick="this.classList.toggle('chk-on')"><span class="chk-icon"></span>🔗 Solución integral</span>
+            </div>
+          </div>
+
+          <div style="background:#FFF7ED;border-radius:8px;padding:10px 14px;border-left:3px solid #F97316;">
+            <div style="font-size:.74rem;font-weight:700;color:#0f172a;">9. ¿Es cotización o proceso formal? <span style="color:#DC2626;">*</span></div>
+            <div style="display:flex;flex-wrap:wrap;gap:5px;margin-top:6px;">
+              <span style="padding:3px 10px;background:#FFF7ED;border:1.5px solid #F97316;border-radius:12px;font-size:.67rem;color:#7C2D12;font-weight:600;">📄 Cotización</span>
+              <span style="padding:3px 10px;background:#FEF9C3;border:1.5px solid #EAB308;border-radius:12px;font-size:.67rem;color:#713F12;font-weight:600;">📋 RPI</span>
+              <span style="padding:3px 10px;background:#F0FDF4;border:1.5px solid #22C55E;border-radius:12px;font-size:.67rem;color:#14532D;font-weight:600;">📑 RFQ</span>
+              <span style="padding:3px 10px;background:#EFF6FF;border:1.5px solid #3B82F6;border-radius:12px;font-size:.67rem;color:#1E3A5F;font-weight:600;">🏛️ RFP</span>
+            </div>
+          </div>
+
+          <div style="background:#EFF6FF;border-radius:8px;padding:10px 14px;border-left:3px solid #0284C7;">
+            <div style="font-size:.74rem;font-weight:700;color:#0f172a;">10. ¿Qué problema buscas resolver?</div>
+            <span class="multi-hint">☑ Puedes marcar más de una opción</span>
+            <div style="display:flex;flex-wrap:wrap;gap:5px;margin-top:4px;">
+              <span class="chk-opt" onclick="this.classList.toggle('chk-on')"><span class="chk-icon"></span>Reducir costos</span>
+              <span class="chk-opt" onclick="this.classList.toggle('chk-on')"><span class="chk-icon"></span>Mejorar tiempos de entrega</span>
+              <span class="chk-opt" onclick="this.classList.toggle('chk-on')"><span class="chk-icon"></span>Escalar operación</span>
+              <span class="chk-opt" onclick="this.classList.toggle('chk-on')"><span class="chk-icon"></span>Mejorar trazabilidad</span>
+              <span class="chk-opt" onclick="this.classList.toggle('chk-on')"><span class="chk-icon"></span>Reducir reclamaciones</span>
+              <span class="chk-opt" onclick="this.classList.toggle('chk-on')"><span class="chk-icon"></span>Tercerizar operación</span>
+              <span class="chk-opt" onclick="this.classList.toggle('chk-on')"><span class="chk-icon"></span>Otro</span>
+            </div>
+          </div>
+
+          <div style="background:#EFF6FF;border-radius:8px;padding:10px 14px;border-left:3px solid #0284C7;">
+            <div style="font-size:.74rem;font-weight:700;color:#0f172a;">11. ¿Tu operación es B2B, B2C o ambas?</div>
+            <span class="multi-hint">☑ Puedes marcar más de una opción</span>
+            <div style="display:flex;gap:5px;margin-top:4px;">
+              <span class="chk-opt" onclick="this.classList.toggle('chk-on')"><span class="chk-icon"></span>B2B</span>
+              <span class="chk-opt" onclick="this.classList.toggle('chk-on')"><span class="chk-icon"></span>B2C</span>
+              <span class="chk-opt" onclick="this.classList.toggle('chk-on')"><span class="chk-icon"></span>Ambas</span>
+            </div>
+          </div>
+
+          <div style="background:#EFF6FF;border-radius:8px;padding:10px 14px;border-left:3px solid #0284C7;">
+            <div style="font-size:.74rem;font-weight:700;color:#0f172a;">12. ¿En qué zonas operas o quieres operar?</div>
+            <div style="font-size:.67rem;color:#94A3B8;margin-top:3px;background:#fff;border:1px solid #e2e8f0;border-radius:5px;padding:5px 8px;">Ej: Bogotá, Medellín, eje cafetero...</div>
+          </div>
+
+          <div style="background:#EFF6FF;border-radius:8px;padding:10px 14px;border-left:3px solid #0284C7;">
+            <div style="font-size:.74rem;font-weight:700;color:#0f172a;">13. Envíos / entregas al mes (aproximado)</div>
+            <div style="display:flex;flex-wrap:wrap;gap:4px;margin-top:6px;">
+              <span style="padding:2px 8px;background:#F1F5F9;border-radius:10px;font-size:.64rem;color:#475569;border:1px solid #e2e8f0;">&lt; 500</span>
+              <span style="padding:2px 8px;background:#F1F5F9;border-radius:10px;font-size:.64rem;color:#475569;border:1px solid #e2e8f0;">500 – 2.000</span>
+              <span style="padding:2px 8px;background:#F1F5F9;border-radius:10px;font-size:.64rem;color:#475569;border:1px solid #e2e8f0;">2.000 – 10.000</span>
+              <span style="padding:2px 8px;background:#F1F5F9;border-radius:10px;font-size:.64rem;color:#475569;border:1px solid #e2e8f0;">&gt; 10.000</span>
+            </div>
+          </div>
+
+          <div style="background:#EFF6FF;border-radius:8px;padding:10px 14px;border-left:3px solid #0284C7;">
+            <div style="font-size:.74rem;font-weight:700;color:#0f172a;">14. ¿Requieres tecnología o integración?</div>
+            <span class="multi-hint">☑ Puedes marcar más de una opción</span>
+            <div style="display:flex;flex-wrap:wrap;gap:5px;margin-top:4px;">
+              <span class="chk-opt" onclick="this.classList.toggle('chk-on')"><span class="chk-icon"></span>Tracking</span>
+              <span class="chk-opt" onclick="this.classList.toggle('chk-on')"><span class="chk-icon"></span>API</span>
+              <span class="chk-opt" onclick="this.classList.toggle('chk-on')"><span class="chk-icon"></span>Dashboard</span>
+              <span class="chk-opt" onclick="this.classList.toggle('chk-on')"><span class="chk-icon"></span>Evidencia de entrega</span>
+              <span class="chk-opt" onclick="this.classList.toggle('chk-on')"><span class="chk-icon"></span>TMS/WMS</span>
+              <span class="chk-opt" onclick="this.classList.toggle('chk-on')"><span class="chk-icon"></span>No aplica</span>
+            </div>
+          </div>
+
+        </div>
+
+        <!-- COLUMNA DERECHA -->
+        <div style="display:flex;flex-direction:column;gap:10px;">
+
+          <div style="font-size:.7rem;font-weight:800;text-transform:uppercase;letter-spacing:.5px;color:#16A34A;padding:6px 0;">🏆 Sección 3 — Calificación Comercial</div>
+
+          <div style="background:#F0FDF4;border-radius:8px;padding:10px 14px;border-left:3px solid #16A34A;">
+            <div style="font-size:.74rem;font-weight:700;color:#0f172a;">15. ¿Tienes operación con otro proveedor logístico?</div>
+            <div style="display:flex;gap:6px;margin-top:6px;">
+              <span style="padding:3px 10px;background:#F1F5F9;border-radius:10px;font-size:.67rem;color:#475569;border:1px solid #e2e8f0;font-weight:600;">Sí</span>
+              <span style="padding:3px 10px;background:#F1F5F9;border-radius:10px;font-size:.67rem;color:#475569;border:1px solid #e2e8f0;font-weight:600;">No</span>
+              <span style="padding:3px 10px;background:#F1F5F9;border-radius:10px;font-size:.67rem;color:#475569;border:1px solid #e2e8f0;font-weight:600;">Operación propia</span>
+            </div>
+          </div>
+
+          <div style="background:#F0FDF4;border-radius:8px;padding:10px 14px;border-left:3px solid #16A34A;">
+            <div style="font-size:.74rem;font-weight:700;color:#0f172a;">16. ¿Cuándo quieres implementar?</div>
+            <div style="display:flex;flex-wrap:wrap;gap:4px;margin-top:6px;">
+              <span style="padding:2px 8px;background:#FEF2F2;border-radius:10px;font-size:.64rem;color:#991B1B;border:1px solid #FECACA;font-weight:600;">🔴 Inmediato</span>
+              <span style="padding:2px 8px;background:#FEF9C3;border-radius:10px;font-size:.64rem;color:#713F12;border:1px solid #FDE68A;font-weight:600;">1 mes</span>
+              <span style="padding:2px 8px;background:#F0FDF4;border-radius:10px;font-size:.64rem;color:#14532D;border:1px solid #BBF7D0;font-weight:600;">2-3 meses</span>
+              <span style="padding:2px 8px;background:#F8FAFC;border-radius:10px;font-size:.64rem;color:#475569;border:1px solid #e2e8f0;font-weight:600;">+3 meses</span>
+            </div>
+          </div>
+
+          <div style="background:#F0FDF4;border-radius:8px;padding:10px 14px;border-left:3px solid #16A34A;">
+            <div style="font-size:.74rem;font-weight:700;color:#0f172a;">17. Volumen estimado mensual de la operación</div>
+            <div style="display:flex;flex-wrap:wrap;gap:4px;margin-top:6px;">
+              <span style="padding:2px 8px;background:#F1F5F9;border-radius:10px;font-size:.64rem;color:#475569;border:1px solid #e2e8f0;">&lt; $20M COP</span>
+              <span style="padding:2px 8px;background:#F1F5F9;border-radius:10px;font-size:.64rem;color:#475569;border:1px solid #e2e8f0;">$20M – $100M</span>
+              <span style="padding:2px 8px;background:#FEF3C7;border-radius:10px;font-size:.64rem;color:#92400E;border:1px solid #FDE68A;font-weight:600;">&gt; $100M 🔴 Big Deal</span>
+            </div>
+          </div>
+
+          <div style="background:#F0FDF4;border-radius:8px;padding:10px 14px;border-left:3px solid #16A34A;">
+            <div style="font-size:.74rem;font-weight:700;color:#0f172a;">18. ¿Tienes presupuesto definido?</div>
+            <div style="display:flex;gap:6px;margin-top:6px;">
+              <span style="padding:3px 10px;background:#F1F5F9;border-radius:10px;font-size:.67rem;color:#475569;border:1px solid #e2e8f0;font-weight:600;">Sí</span>
+              <span style="padding:3px 10px;background:#F1F5F9;border-radius:10px;font-size:.67rem;color:#475569;border:1px solid #e2e8f0;font-weight:600;">No</span>
+              <span style="padding:3px 10px;background:#F1F5F9;border-radius:10px;font-size:.67rem;color:#475569;border:1px solid #e2e8f0;font-weight:600;">En evaluación</span>
+            </div>
+          </div>
+
+          <div style="background:#F0FDF4;border-radius:8px;padding:10px 14px;border-left:3px solid #16A34A;">
+            <div style="font-size:.74rem;font-weight:700;color:#0f172a;">19. ¿Cómo prefieres ser contactado?</div>
+            <div style="display:flex;flex-wrap:wrap;gap:4px;margin-top:6px;">
+              <span style="padding:2px 8px;background:#F1F5F9;border-radius:10px;font-size:.64rem;color:#475569;border:1px solid #e2e8f0;">📞 Llamada</span>
+              <span style="padding:2px 8px;background:#F1F5F9;border-radius:10px;font-size:.64rem;color:#475569;border:1px solid #e2e8f0;">💬 WhatsApp</span>
+              <span style="padding:2px 8px;background:#F1F5F9;border-radius:10px;font-size:.64rem;color:#475569;border:1px solid #e2e8f0;">📧 Correo</span>
+              <span style="padding:2px 8px;background:#F1F5F9;border-radius:10px;font-size:.64rem;color:#475569;border:1px solid #e2e8f0;">📅 Reunión</span>
+            </div>
+          </div>
+
+          <!-- PREGUNTAS POR UEN -->
+          <div style="font-size:.7rem;font-weight:800;text-transform:uppercase;letter-spacing:.5px;color:#DC2626;padding:6px 0;">🎯 Sección 4 — Preguntas Específicas por UEN (condicional)</div>
+
+          <div style="background:#FFF1F2;border-radius:8px;padding:10px 14px;border-left:3px solid #DC2626;">
+            <div style="font-size:.72rem;font-weight:700;color:#DC2626;margin-bottom:6px;">📦 Last Mile (si seleccionó Última Milla)</div>
+            <div style="display:flex;flex-direction:column;gap:4px;font-size:.67rem;color:#475569;">
+              <div>• ¿Entregas al día o al mes? <span style="color:#94A3B8;">[input numérico]</span></div>
+              <div>• Tipo: <span style="background:#F1F5F9;padding:1px 6px;border-radius:6px;">Same day</span> <span style="background:#F1F5F9;padding:1px 6px;border-radius:6px;">Next day</span> <span style="background:#F1F5F9;padding:1px 6px;border-radius:6px;">Programadas</span></div>
+              <div>• ¿Necesitas prueba de entrega? <span style="background:#F1F5F9;padding:1px 6px;border-radius:6px;">Sí</span> <span style="background:#F1F5F9;padding:1px 6px;border-radius:6px;">No</span></div>
+              <div>• ¿Requieres recaudo contra entrega? <span style="background:#F1F5F9;padding:1px 6px;border-radius:6px;">Sí</span> <span style="background:#F1F5F9;padding:1px 6px;border-radius:6px;">No</span></div>
+              <div>• Tipo de producto: <span style="color:#94A3B8;">[texto libre]</span></div>
+            </div>
+          </div>
+
+          <div style="background:#FFF1F2;border-radius:8px;padding:10px 14px;border-left:3px solid #E57373;">
+            <div style="font-size:.72rem;font-weight:700;color:#B71C1C;margin-bottom:6px;">🏙️ First Mile / Distribución (si seleccionó Distribución)</div>
+            <div style="display:flex;flex-direction:column;gap:4px;font-size:.67rem;color:#475569;">
+              <div>• Puntos de origen o recolección: <span style="color:#94A3B8;">[número]</span></div>
+              <div>• Vehículos: <span style="background:#F1F5F9;padding:1px 6px;border-radius:6px;">Moto</span> <span style="background:#F1F5F9;padding:1px 6px;border-radius:6px;">Furgón</span> <span style="background:#F1F5F9;padding:1px 6px;border-radius:6px;">Camión</span> <span style="background:#F1F5F9;padding:1px 6px;border-radius:6px;">Mixto</span></div>
+              <div>• Operación: <span style="background:#F1F5F9;padding:1px 6px;border-radius:6px;">Fija</span> <span style="background:#F1F5F9;padding:1px 6px;border-radius:6px;">Variable</span></div>
+              <div>• Ventanas horarias: <span style="color:#94A3B8;">[texto: ej. 6am – 2pm]</span></div>
+            </div>
+          </div>
+
+          <div style="background:#FFF1F2;border-radius:8px;padding:10px 14px;border-left:3px solid #F97316;">
+            <div style="font-size:.72rem;font-weight:700;color:#7C2D12;margin-bottom:6px;">🚛 Long Haul (si seleccionó Carga nacional)</div>
+            <div style="display:flex;flex-direction:column;gap:4px;font-size:.67rem;color:#475569;">
+              <div>• Rutas nacionales: <span style="color:#94A3B8;">[texto: ej. Bogotá–Cali–Medellín]</span></div>
+              <div>• Tipo de carga: <span style="background:#F1F5F9;padding:1px 6px;border-radius:6px;">Seca</span> <span style="background:#F1F5F9;padding:1px 6px;border-radius:6px;">Refrigerada</span> <span style="background:#F1F5F9;padding:1px 6px;border-radius:6px;">Especial</span></div>
+              <div>• Viajes mensuales: <span style="color:#94A3B8;">[número]</span></div>
+              <div>• Modalidad: <span style="background:#F1F5F9;padding:1px 6px;border-radius:6px;">Dedicado</span> <span style="background:#F1F5F9;padding:1px 6px;border-radius:6px;">Spot</span> <span style="background:#F1F5F9;padding:1px 6px;border-radius:6px;">Ambos</span></div>
+            </div>
+          </div>
+
+          <div style="background:#FFF1F2;border-radius:8px;padding:10px 14px;border-left:3px solid #7C3AED;">
+            <div style="font-size:.72rem;font-weight:700;color:#5B21B6;margin-bottom:6px;">🏭 Warehouse (si seleccionó Almacenamiento)</div>
+            <div style="display:flex;flex-direction:column;gap:4px;font-size:.67rem;color:#475569;">
+              <div>• Posiciones / m² requeridos: <span style="color:#94A3B8;">[número]</span></div>
+              <div>• Tipo de inventario: <span style="color:#94A3B8;">[texto]</span></div>
+              <div>• ¿Requieres picking, packing o cross-docking? <span style="background:#F1F5F9;padding:1px 6px;border-radius:6px;">Sí</span> <span style="background:#F1F5F9;padding:1px 6px;border-radius:6px;">No</span></div>
+              <div>• ¿Integración ERP / e-commerce? <span style="background:#F1F5F9;padding:1px 6px;border-radius:6px;">Sí</span> <span style="background:#F1F5F9;padding:1px 6px;border-radius:6px;">No</span></div>
+              <div>• Rotación del inventario: <span style="background:#F1F5F9;padding:1px 6px;border-radius:6px;">Alta</span> <span style="background:#F1F5F9;padding:1px 6px;border-radius:6px;">Media</span> <span style="background:#F1F5F9;padding:1px 6px;border-radius:6px;">Baja</span></div>
+            </div>
+          </div>
+
+          <!-- MARKETING -->
+          <div style="font-size:.7rem;font-weight:800;text-transform:uppercase;letter-spacing:.5px;color:#0891B2;padding:6px 0;">📣 Sección 5 — Preguntas de Marketing y Calificación</div>
+
+          <div style="background:#ECFEFF;border-radius:8px;padding:10px 14px;border-left:3px solid #0891B2;">
+            <div style="font-size:.74rem;font-weight:700;color:#0f172a;">20. ¿Cómo nos conociste?</div>
+            <div style="display:flex;flex-wrap:wrap;gap:4px;margin-top:6px;">
+              <span style="padding:2px 8px;background:#F1F5F9;border-radius:10px;font-size:.64rem;color:#475569;border:1px solid #e2e8f0;">Google</span>
+              <span style="padding:2px 8px;background:#F1F5F9;border-radius:10px;font-size:.64rem;color:#475569;border:1px solid #e2e8f0;">LinkedIn</span>
+              <span style="padding:2px 8px;background:#F1F5F9;border-radius:10px;font-size:.64rem;color:#475569;border:1px solid #e2e8f0;">Instagram / Facebook</span>
+              <span style="padding:2px 8px;background:#F1F5F9;border-radius:10px;font-size:.64rem;color:#475569;border:1px solid #e2e8f0;">Referido</span>
+              <span style="padding:2px 8px;background:#F1F5F9;border-radius:10px;font-size:.64rem;color:#475569;border:1px solid #e2e8f0;">Cliente actual</span>
+              <span style="padding:2px 8px;background:#F1F5F9;border-radius:10px;font-size:.64rem;color:#475569;border:1px solid #e2e8f0;">Evento / feria</span>
+              <span style="padding:2px 8px;background:#F1F5F9;border-radius:10px;font-size:.64rem;color:#475569;border:1px solid #e2e8f0;">Otro</span>
+            </div>
+          </div>
+
+          <div style="background:#ECFEFF;border-radius:8px;padding:10px 14px;border-left:3px solid #0891B2;">
+            <div style="font-size:.74rem;font-weight:700;color:#0f172a;">21. ¿Has cotizado con otros operadores?</div>
+            <div style="display:flex;gap:6px;margin-top:6px;">
+              <span style="padding:3px 10px;background:#F1F5F9;border-radius:10px;font-size:.67rem;color:#475569;border:1px solid #e2e8f0;font-weight:600;">Sí</span>
+              <span style="padding:3px 10px;background:#F1F5F9;border-radius:10px;font-size:.67rem;color:#475569;border:1px solid #e2e8f0;font-weight:600;">No</span>
+              <span style="padding:3px 10px;background:#F1F5F9;border-radius:10px;font-size:.67rem;color:#475569;border:1px solid #e2e8f0;font-weight:600;">Estoy evaluando opciones</span>
+            </div>
+          </div>
+
+          <div style="background:#ECFEFF;border-radius:8px;padding:10px 14px;border-left:3px solid #0891B2;">
+            <div style="font-size:.74rem;font-weight:700;color:#0f172a;">22. ¿Qué KPI te interesa mejorar?</div>
+            <div style="display:flex;flex-wrap:wrap;gap:4px;margin-top:6px;">
+              <span style="padding:2px 8px;background:#F1F5F9;border-radius:10px;font-size:.64rem;color:#475569;border:1px solid #e2e8f0;">Costo por entrega</span>
+              <span style="padding:2px 8px;background:#F1F5F9;border-radius:10px;font-size:.64rem;color:#475569;border:1px solid #e2e8f0;">OTIF</span>
+              <span style="padding:2px 8px;background:#F1F5F9;border-radius:10px;font-size:.64rem;color:#475569;border:1px solid #e2e8f0;">NPS</span>
+              <span style="padding:2px 8px;background:#F1F5F9;border-radius:10px;font-size:.64rem;color:#475569;border:1px solid #e2e8f0;">Tiempo de entrega</span>
+              <span style="padding:2px 8px;background:#F1F5F9;border-radius:10px;font-size:.64rem;color:#475569;border:1px solid #e2e8f0;">Trazabilidad</span>
+              <span style="padding:2px 8px;background:#F1F5F9;border-radius:10px;font-size:.64rem;color:#475569;border:1px solid #e2e8f0;">Nivel de servicio</span>
+            </div>
+          </div>
+
+          <div style="background:#F8FAFC;border-radius:8px;padding:10px 14px;border-left:3px solid #94A3B8;">
+            <div style="display:flex;align-items:flex-start;gap:8px;">
+              <div style="width:14px;height:14px;border:2px solid #7C3AED;border-radius:3px;margin-top:2px;flex-shrink:0;background:#7C3AED;"></div>
+              <div style="font-size:.68rem;color:#475569;">Acepto el tratamiento de mis datos personales según la <span style="color:#7C3AED;font-weight:600;">política de privacidad</span> de Grupo Quick.</div>
+            </div>
+          </div>
+
+          <div style="background:linear-gradient(135deg,#7C3AED,#5B21B6);border-radius:8px;padding:11px;text-align:center;cursor:pointer;">
+            <span style="font-size:.82rem;font-weight:800;color:#fff;">📊 Enviar solicitud completa</span>
+          </div>
+
+        </div>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+</div><!-- /main -->
+
+<script>
+function showForm(type){
+  document.getElementById('form-sem').style.display = type==='sem' ? 'block' : 'none';
+  document.getElementById('form-seo').style.display = type==='seo' ? 'block' : 'none';
+  const tabSem = document.getElementById('tab-sem');
+  const tabSeo = document.getElementById('tab-seo');
+  if(type==='sem'){
+    tabSem.style.background='#0284C7'; tabSem.style.color='#fff'; tabSem.style.borderColor='#0284C7';
+    tabSeo.style.background='transparent'; tabSeo.style.color='#7C3AED'; tabSeo.style.borderColor='#7C3AED';
+  } else {
+    tabSeo.style.background='#7C3AED'; tabSeo.style.color='#fff'; tabSeo.style.borderColor='#7C3AED';
+    tabSem.style.background='transparent'; tabSem.style.color='#0284C7'; tabSem.style.borderColor='#0284C7';
+  }
+}
+</script>
+<script>
+// ── DATA PANELS ──
+const panels = {
+  // ═══════════════════════════════════════════
+  // CANALES DE CAPTURA — proceso específico
+  // ═══════════════════════════════════════════
+  ch_web:{
+    title:'🌐 Formularios Web — SEO / SEM',
+    sub:'Proceso de captura · KPIs · Mejores prácticas',
+    channel:true, color:'#0284C7',
+    conv:'2–5%', cpl:'$50 USD', priority:'Media',
+    steps:[
+      {n:1,c:'#0284C7',t:'Visitante llega desde campaña',d:'Tráfico orgánico (SEO) o de pago (SEM/Google Ads) aterriza en la landing page específica del servicio consultado. El pixel de seguimiento registra la fuente (UTM: source, medium, campaign, keyword).'},
+      {n:2,c:'#0284C7',t:'Completa el formulario (corto SEM o completo SEO/B2B)',d:'<strong>Formulario Corto SEM</strong> (landing de alta conversión, máx. 8 campos): Nombre · Empresa · Correo corporativo · WhatsApp · Servicio · Tipo de solicitud (Cotización / RPI / RFQ / RFP) · Cuándo inicia · Política de datos. <strong>Formulario Largo SEO/B2B</strong>: perfil completo con preguntas por UEN, calificación comercial y preguntas de marketing. Ver sección "📋 Formularios de Captura" más abajo.'},
+      {n:3,c:'#0284C7',t:'Lead entra al CRM en <30 segundos',d:'El sistema registra automáticamente el lead con todos los datos del formulario más UTM tracking. El origen de la campaña queda registrado para medir ROI de cada keyword y anuncio.'},
+      {n:4,c:'#0284C7',t:'Auto-respuesta inmediata al prospecto',d:'En menos de 60 segundos el prospecto recibe confirmación de recibido (email + WhatsApp si dejó número). Incluye: nombre del ejecutivo asignado, tiempo estimado de respuesta y enlace para agendar reunión.'},
+      {n:5,c:'#0284C7',t:'Lead scoring automático',d:'La IA evalúa: tamaño de empresa, servicio consultado, volumen estimado y comportamiento en el sitio (páginas vistas, tiempo de permanencia). Clasifica como MQL, SQL o Big Deal.'},
+      {n:6,c:'#0284C7',t:'Notificación al Manager (<5 min)',d:'El Manager de la UEN correspondiente recibe WhatsApp con: nombre, empresa, servicio, score y datos de contacto. Puede reasignar al ejecutivo con un clic desde el mensaje.'}
+    ],
+    kpis:['Conversión visitor-to-lead: 2–5%','Tiempo en CRM: <30 seg','Auto-respuesta: <60 seg','Respuesta humana: <5 min','ROI campañas medido por UTM'],
+    bps:[
+      {t:'Landing pages por servicio',d:'No enviar todo el tráfico a la misma página. Crear landing pages específicas por UEN/servicio. Una LP de Almacenamiento convierte 3× más que una LP genérica de Quick.'},
+      {t:'A/B testing continuo',d:'Probar mínimo 2 versiones de cada formulario cada mes: longitud, campos, call-to-action, colores. Las mejores prácticas varían según la industria y el buyer persona.'},
+      {t:'Campo de volumen/valor',d:'Incluir siempre un campo de volumen o valor estimado del negocio. Es la única forma de activar el filtro Big Deal automáticamente sin intervención humana.'},
+      {t:'UTM en todos los anuncios',d:'Todo anuncio de Google, Meta o LinkedIn debe tener UTM completo (source, medium, campaign, content). Sin esto, no se puede medir qué campañas generan leads que realmente cierran.'}
+    ],
+    errors:['Formularios de más de 7 campos (mata la conversión)','Sin UTM tracking: no sabes qué campañas funcionan','Auto-respuesta genérica sin personalización','Landing page genérica para todos los servicios','Sin campo de volumen/valor para filtro Big Deal']
+  },
+
+  ch_wapp:{
+    title:'💬 WhatsApp Business — API Oficial Meta',
+    sub:'Proceso de captura · KPIs · Mejores prácticas',
+    channel:true, color:'#25D366',
+    conv:'15–20%', cpl:'$20–60 USD ⚡', priority:'Alta',
+    cplNote:'Canal de conversión: el CPL real es el del canal que trajo al visitante al sitio (Google ~$30–50, SEO ~$0, Social ~$60–90). Costo API: ~$0.02–0.08 USD/conversación.',
+    steps:[
+      {n:1,c:'#25D366',t:'Prospecto llega desde web (botón flotante) o número directo',d:'El prospecto hace clic en el botón flotante de WhatsApp del sitio web de Quick (presente en cada página country: Colombia, USA, México, Chile, etc.) o escribe directamente al número comercial. ⚡ WhatsApp es un canal de conversión, no de adquisición independiente: el CPL real se atribuye al canal que trajo al visitante (Google Ads, SEO orgánico, Redes Sociales).'},
+      {n:2,c:'#25D366',t:'Bot de bienvenida + menú de opciones',d:'En menos de 5 segundos el bot responde con saludo personalizado y menú estructurado de máximo 3 niveles: (1) ¿A cuál empresa del grupo deseas contactar? → (2) ¿Qué servicio te interesa? → (3) Datos básicos de contacto.'},
+      {n:3,c:'#25D366',t:'Recopilación de datos clave',d:'El bot recoge conversacionalmente: nombre · empresa · ciudad · servicio específico · volumen estimado. El tono debe ser natural, no un formulario. El prospecto no debe sentir que está llenando un form.'},
+      {n:4,c:'#25D366',t:'Clasificación y scoring automático',d:'Con los datos recopilados, el sistema clasifica el lead (empresa + UEN + valor estimado), activa el filtro Big Deal si corresponde y asigna al Manager/responsable correcto.'},
+      {n:5,c:'#25D366',t:'Notificación al Manager en tiempo real',d:'El Manager recibe WhatsApp con resumen completo del lead: nombre, empresa, servicio, volumen y el historial de la conversación del bot. Puede retomar la conversación directamente.'},
+      {n:6,c:'#25D366',t:'Handoff humano en <5 min',d:'En horario laboral, un ejecutivo toma la conversación en menos de 5 minutos. El prospecto ve una transición natural del bot al humano. Fuera de horario: el bot mantiene la conversación y agenda para el día hábil siguiente.'}
+    ],
+    kpis:['Conversión: 15–20%','Handoff bot→humano: <5 min','Tasa apertura de mensajes: >98%','Tasa de respuesta: >70%','Leads fuera de horario: recuperados al 100%'],
+    bps:[
+      {t:'API oficial Meta únicamente',d:'Jamás usar soluciones grises (WhatsApp Web automatizado, librerías no oficiales). Meta puede bloquear el número permanentemente sin aviso previo, paralizando toda la operación comercial del grupo.'},
+      {t:'Menú máximo 3 opciones por nivel',d:'Más de 3 opciones por menú genera abandono. El prospecto debe llegar al ejecutivo correcto en máximo 3 interacciones con el bot. La simplicidad es la clave.'},
+      {t:'Tono conversacional, no formulario',d:'El bot debe preguntar como lo haría un humano amigable. "¿A qué te dedicas con tu empresa?" funciona mejor que "Ingresa el nombre de tu empresa:". La experiencia debe sentirse humana.'},
+      {t:'Disponibilidad 24/7 con bot',d:'El 40% de los leads de WhatsApp llegan fuera de horario laboral. El bot debe poder recopilar todos los datos y agendar para el siguiente día hábil. Un lead sin respuesta en WhatsApp se va a la competencia.'},
+      {t:'WhatsApp = canal de conversión, no de adquisición',d:'El botón flotante en los sitios web de Quick (Colombia, USA, México, Chile, etc.) convierte visitantes existentes en leads. El CPL de WhatsApp NO es $200: es el CPL del canal upstream (Google Ads ~$30–50, SEO ~$0, LinkedIn ~$60–90) dividido por la tasa de conversión a WhatsApp. Medir WhatsApp como canal independiente distorsiona el análisis de inversión en medios.'}
+    ],
+    errors:['Usar WhatsApp personal o no oficial para negocios','Menús de más de 5 opciones por nivel','Handoff al humano en >15 minutos','Sin cobertura fuera de horario laboral','No vincular la conversación al CRM automáticamente','Medir CPL de WhatsApp como canal independiente (sobreestima el costo 3-4×)']
+  },
+
+  ch_rrss:{
+    title:'📱 Redes Sociales — LinkedIn · Instagram · Facebook · TikTok',
+    sub:'Proceso de captura · KPIs · Mejores prácticas',
+    channel:true, color:'#5B21B6',
+    conv:'2–13%', cpl:'$60–90 USD', priority:'Media-Alta',
+    steps:[
+      {n:1,c:'#5B21B6',t:'Prospecto interactúa en la red social',d:'El prospecto puede: (A) enviar un DM directo · (B) completar un formulario de Lead Generation nativo (Meta/LinkedIn) · (C) comentar en una publicación · (D) hacer clic en un anuncio con formulario integrado.'},
+      {n:2,c:'#5B21B6',t:'Captura automática del lead',d:'Los formularios nativos de Meta (Instagram/Facebook), LinkedIn Lead Gen Forms y TikTok Lead Generation ads capturan los datos sin redirigir al sitio. La tasa de conversión es 2-3× mayor que redirigir a una landing page externa.'},
+      {n:3,c:'#5B21B6',t:'Integración automática con CRM',d:'La plataforma social envía el lead al CRM via integración nativa (Meta Leads API / LinkedIn API) o via Zapier/Make. El lead debe estar en el CRM en menos de 2 minutos.'},
+      {n:4,c:'#5B21B6',t:'Respuesta en red social + WhatsApp',d:'El prospecto recibe respuesta en el mismo canal donde contactó (DM o comentario) en menos de 1 hora. Si dejó teléfono, el bot de WhatsApp lo contacta también en paralelo.'},
+      {n:5,c:'#5B21B6',t:'Clasificación y enrutamiento',d:'El sistema clasifica el lead por empresa, servicio y valor estimado (igual que otros canales). El origen de red social queda registrado para medir ROI por plataforma.'},
+      {n:6,c:'#5B21B6',t:'Notificación al Manager',d:'El Manager recibe notificación con el lead completo incluyendo el perfil de red social del prospecto. LinkedIn aporta datos valiosos: cargo, empresa, sector, conexiones en común.'}
+    ],
+    kpis:['LinkedIn B2B conversión: 6–13%','Instagram/Facebook: 2–5%','Respuesta en red social: <1 hora','Lead en CRM: <2 min','Leads LinkedIn: mayor calidad (cargo confirmado)'],
+    bps:[
+      {t:'LinkedIn para B2B: la plataforma correcta',d:'Para Quick (logística B2B), LinkedIn es el canal social más efectivo. Los prospectos tienen su cargo y empresa verificados. LinkedIn Lead Gen Forms convierten 3× más que redirigir al sitio.'},
+      {t:'TikTok Lead Generation ads para B2B joven',d:'TikTok Lead Generation ads permiten capturar leads sin que salgan de la aplicación, excelente para B2B con tomadores de decisión jóvenes. Los formularios pre-llenos reducen fricción y aumentan conversión significativamente.'},
+      {t:'Formularios nativos vs. landing page',d:'Los formularios nativos de Meta, LinkedIn y TikTok (donde el usuario no abandona la red social) tienen 2-3× mayor conversión. El prospecto no tiene que ir a otra página, reducir la fricción es clave.'},
+      {t:'Respuesta en <1 hora en redes',d:'La expectativa de respuesta en redes sociales es mucho más alta que en email. El 78% de los compradores B2B espera respuesta en <1 hora en redes. Sin esta velocidad, la oportunidad se pierde.'},
+      {t:'Social listening activo',d:'Monitorear menciones de Quick y de necesidades logísticas en redes (palabras clave: "necesito transporte", "busco almacenamiento", etc.). Estos leads "inbound orgánicos" tienen alta intención de compra.'}
+    ],
+    errors:['Usar solo para publicar contenido, no para capturar leads','Redirigir al sitio en lugar de usar formularios nativos','Responder DMs en >24 horas (el prospecto ya se fue)','Sin integración de la red social con el CRM','Ignorar comentarios con intención de compra en publicaciones']
+  },
+
+  ch_email:{
+    title:'📧 Correo Electrónico — Bandeja Comercial',
+    sub:'Proceso de captura · KPIs · Mejores prácticas',
+    channel:true, color:'#EA4335',
+    conv:'2–14%', cpl:'$90 USD', priority:'Media',
+    steps:[
+      {n:1,c:'#EA4335',t:'Email llega a la bandeja comercial',d:'El prospecto envía un email a la dirección comercial del grupo (ventas@quick.com.co o por empresa). La bandeja debe ser dedicada exclusivamente a prospectos, separada de los emails operativos.'},
+      {n:2,c:'#EA4335',t:'Parser de IA extrae los datos',d:'Un parser automático (IA) lee el email y extrae: nombre, empresa, servicio consultado, teléfono, ciudad y cualquier información de volumen o urgencia mencionada. El lead se crea en CRM sin intervención humana.'},
+      {n:3,c:'#EA4335',t:'Auto-respuesta personalizada en <5 min',d:'El prospecto recibe auto-respuesta en menos de 5 minutos con: nombre del ejecutivo asignado, confirmación de lo que entendió el sistema, opciones de agendamiento y el número de WhatsApp por si prefiere ese canal.'},
+      {n:4,c:'#EA4335',t:'Thread vinculado al lead en CRM',d:'El sistema vincula automáticamente todos los emails futuros del mismo thread al lead en CRM. Cualquier respuesta del prospecto actualiza el lead y notifica al ejecutivo asignado.'},
+      {n:5,c:'#EA4335',t:'Notificación al Manager (<5 min)',d:'El Manager recibe notificación con el resumen del email, el lead creado en CRM y acceso directo al thread. Si el email menciona un volumen >$100M COP/mes, se activa el filtro Big Deal automáticamente.'},
+      {n:6,c:'#EA4335',t:'Seguimiento multi-canal activado',d:'Si el prospecto no responde el email de seguimiento en 48 horas, el sistema activa automáticamente contacto por WhatsApp (si dejó número) y programa una llamada para el ejecutivo.'}
+    ],
+    kpis:['Tasa de respuesta email B2B: 2–14%','Auto-respuesta: <5 min','Apertura de auto-respuesta: >85%','Respuesta humana: <2 horas en horario hábil','Vinculación al CRM: 100% automática'],
+    bps:[
+      {t:'Bandeja dedicada por empresa del grupo',d:'Crear direcciones específicas: ventas@quickcolombia.com, sales@quickusa.com, etc. Nunca mezclar emails de prospectos con emails operativos. Facilita el parseo automático y la asignación correcta.'},
+      {t:'Parser de IA para extracción de datos',d:'No debe haber ningún ingreso manual de datos desde emails. La IA extrae toda la información relevante. Un lead de email que requiere ingreso manual tarda en promedio 4 horas en llegar al CRM — demasiado tarde.'},
+      {t:'Auto-respuesta con siguiente paso claro',d:'La auto-respuesta no debe ser solo un acuse de recibo. Debe incluir: un enlace de agendamiento (Calendly), el nombre del ejecutivo y una pregunta específica para calificar al prospecto.'},
+      {t:'Firma con datos completos en todos los emails',d:'Todos los emails outbound deben incluir firma con: nombre, cargo, empresa, teléfono con click-to-call, WhatsApp y LinkedIn. El prospecto debe poder elegir el canal de respuesta que prefiera.'}
+    ],
+    errors:['Bandeja mezclada con emails operativos','Ingreso manual de datos del email al CRM','Auto-respuesta genérica tipo "Gracias por contactarnos"','No vincular respuestas futuras del prospecto al CRM','Responder emails comerciales en >24 horas']
+  },
+
+  ch_tel:{
+    title:'📞 Llamada Telefónica — Línea Comercial',
+    sub:'Proceso de captura · KPIs · Mejores prácticas',
+    channel:true, color:'#D97706',
+    conv:'25%', cpl:'$150 USD', priority:'Alta',
+    steps:[
+      {n:1,c:'#D97706',t:'Prospecto llama a la línea comercial',d:'El prospecto llama al número comercial de Quick (Colombia, USA, México, Chile según la empresa). El número debe ser específico para ventas, diferente al número de servicio al cliente y operaciones.'},
+      {n:2,c:'#D97706',t:'IVR inteligente: máximo 2 niveles',d:'(1) "¿A cuál empresa del grupo deseas contactar?" → (2) "¿Qué servicio te interesa?" (opciones por UEN). Máximo 3 opciones por nivel, máximo 2 niveles. Si no selecciona, conectar directo con un asesor. Cada segundo de IVR adicional aumenta el abandono.'},
+      {n:3,c:'#D97706',t:'Llamada grabada + transcripción automática',d:'Con consentimiento del prospecto (aviso al inicio), la llamada se graba y transcribe automáticamente. La transcripción alimenta el CRM en tiempo real mientras ocurre la conversación.'},
+      {n:4,c:'#D97706',t:'Asesor atiende en <30 segundos',d:'El asesor recibe en pantalla (CTI - Computer Telephony Integration) los datos del IVR y del CRM (si el prospecto ya existe) antes de contestar. Tiempo de espera máximo: 30 segundos antes de ofrecer callback automático.'},
+      {n:5,c:'#D97706',t:'Lead creado en CRM durante la llamada',d:'El asesor complementa en tiempo real los datos en el CRM mientras habla. La transcripción automática llena los campos básicos. Al colgar, el lead debe estar 100% completo en CRM sin trabajo adicional.'},
+      {n:6,c:'#D97706',t:'Summary automático al Manager',d:'Al finalizar la llamada, el sistema envía al Manager: resumen IA de la conversación, datos del prospecto, siguiente paso acordado y grabación disponible. Si es Big Deal, escala automáticamente a la VP Comercial.'}
+    ],
+    kpis:['Conversión más alta: 25% (3× el promedio)','Tiempo de espera máximo: 30 seg','Tasa de abandono en espera: <5%','Tiempo de wrap-up post-llamada: <2 min','Tasa de callback completado: >90%'],
+    bps:[
+      {t:'CTI integrado con CRM',d:'El asesor debe ver en pantalla la ficha del prospecto (si ya existe en CRM) ANTES de contestar. Saber el nombre, empresa y historial antes de decir "Buenos días" es la diferencia entre una llamada profesional y una genérica.'},
+      {t:'Callback automático si el prospecto cuelga',d:'Si el prospecto espera más de 30 segundos y cuelga, el sistema genera automáticamente un callback en los siguientes 5 minutos. El 40% de los prospectos que cuelgan en espera compran si se les llama de vuelta rápidamente.'},
+      {t:'IVR corto: máximo 2 niveles y 3 opciones',d:'Cada nivel adicional de IVR reduce las llamadas completadas en un 15%. La regla es: si el IVR dura más de 45 segundos antes de hablar con una persona, es demasiado largo. El prospecto prefiere esperar que navegar menús.'},
+      {t:'Grabación + transcripción automática',d:'La transcripción automática de llamadas elimina la necesidad de notas manuales y garantiza que ningún compromiso se pierda. Es también la base para generar la propuesta comercial post-llamada con IA.'}
+    ],
+    errors:['IVR de más de 3 niveles o 45 segundos','Sin callback automático cuando el prospecto cuelga','Asesor sin información del prospecto antes de contestar','Lead en CRM incompleto porque el asesor "lo completa después"','Grabar sin aviso (problema legal en varios países del grupo)']
+  },
+
+  ch_ref:{
+    title:'🤝 Referidos — Clientes Actuales y Aliados',
+    sub:'Proceso de captura · KPIs · Mejores prácticas',
+    channel:true, color:'#8B5CF6',
+    conv:'40–50%', cpl:'Variable', priority:'Muy Alta',
+    steps:[
+      {n:1,c:'#8B5CF6',t:'Cliente actual o aliado refiere a un prospecto',d:'Un cliente satisfecho, aliado estratégico o empleado del grupo presenta a un prospecto. El referido puede llegar por cualquier canal (WhatsApp, email, llamada) pero siempre mencionando quién los refirió.'},
+      {n:2,c:'#8B5CF6',t:'Registro del referido y del referidor',d:'El sistema registra inmediatamente: quién refirió (cliente o aliado) y a quién refirió (prospecto). Esta vinculación en CRM es crítica para: dar contexto al ejecutivo, gestionar el incentivo y medir el programa de referidos.'},
+      {n:3,c:'#8B5CF6',t:'Priorización automática del lead',d:'Los leads referidos reciben automáticamente la máxima prioridad en el sistema (por encima de leads fríos). La notificación al Manager incluye el nombre del referidor prominentemente: "Te llega un lead de parte de [Cliente X]".'},
+      {n:4,c:'#8B5CF6',t:'Primer contacto en <2 minutos',d:'Leads referidos deben contactarse en menos de 2 minutos (no 5 como los leads fríos). El prospecto ya espera la llamada porque el referidor lo anticipó. Cada minuto de demora erosiona la confianza que construyó el referidor.'},
+      {n:5,c:'#8B5CF6',t:'El ejecutivo menciona al referidor en el primer contacto',d:'"Hola [Nombre], le hablo de Quick. [Nombre del referidor] nos habló muy bien de su empresa y nos sugirió contactarle." Esta frase sube instantáneamente la confianza y diferencia la llamada de una en frío.'},
+      {n:6,c:'#8B5CF6',t:'Agradecimiento al referidor + seguimiento',d:'El sistema activa automáticamente: (1) Mensaje de agradecimiento al referidor cuando el lead es contactado · (2) Actualización al referidor sobre el avance del proceso (si autorizado) · (3) Incentivo o reconocimiento formal cuando el negocio se cierra.'}
+    ],
+    kpis:['Conversión más alta: 40–50% (4× promedio)','84% de ventas B2B comienzan con un referido','Contacto requerido: <2 min (no 5 min)','Meta de leads referidos sobre total: >20%','Costo de adquisición: 60% menor que lead frío'],
+    bps:[
+      {t:'Programa formal de referidos con incentivos',d:'No esperar a que los referidos lleguen orgánicamente. Crear un programa formal: cada cliente que refiere recibe un beneficio tangible (descuento, crédito en servicio, reconocimiento especial). Los programas formales generan 3× más referidos que la informalidad.'},
+      {t:'Pedir referidos en el momento correcto',d:'El mejor momento para pedir un referido es cuando el cliente acaba de recibir un resultado positivo ("Excelente, me alegra que el primer mes haya superado las expectativas. ¿Conoce alguna otra empresa que pueda beneficiarse de este servicio?"). No pedir al inicio de la relación.'},
+      {t:'Tracking de toda la cadena de referidos',d:'El CRM debe registrar: quién refirió a quién, cuándo, si el referido cerró, qué ingreso generó y qué incentivo se entregó. Esta data permite identificar a los "super referidores" y gestionarlos con dedicación especial.'},
+      {t:'Los referidos tienen su propio SLA',d:'Internamente deben existir dos SLAs: leads fríos (<5 min de contacto) y leads referidos (<2 min). El equipo debe saber que un referido que espera más de 2 minutos es una falla operativa que afecta la relación con el cliente que refirió.'}
+    ],
+    errors:['No registrar el nombre del referidor en el CRM','Tratar un lead referido igual que uno frío (misma velocidad)','No agradecer al referidor cuando el negocio se cierra','No tener programa formal de referidos (depender solo del azar)','No medir el % de leads referidos sobre el total mensual']
+  },
+
+  capture:{title:'Captura de Lead',sub:'Canales · Mejores prácticas · Etapa 1',
+    stats:[{n:'<60 seg',l:'Meta: lead registrado en CRM desde que entra'},{n:'6 canales',l:'Digital + telefónico + correo + referidos'}],
+    items:[
+      {t:'Progressive Profiling',d:'No pedir todos los datos en el primer contacto. Formularios cortos (3-5 campos) convierten 2-3× más. Recopilar datos progresivamente en cada interacción.'},
+      {t:'Multi-canal unificado',d:'Todos los canales (web, WhatsApp, email, teléfono, redes) deben fluir al mismo CRM y disparar el mismo proceso de clasificación. Sin silos de información.'},
+      {t:'Gestión de llamadas telefónicas',d:'Las llamadas deben registrarse automáticamente en el CRM. Usar un número de línea comercial con grabación y transcripción automática para que el lead quede documentado igual que los digitales.'},
+      {t:'Correo electrónico entrante',d:'Implementar parsing automático de emails comerciales: el sistema lee el email, extrae empresa, nombre, servicio consultado y crea el lead en CRM sin intervención humana.'},
+      {t:'Confirmación inmediata',d:'El prospecto debe recibir confirmación en <60 segundos independientemente del canal. WhatsApp si contactó por ahí, email si escribió por correo, SMS si llamó. Esto reduce la ansiedad y eleva el profesionalismo percibido.'}
+    ]},
+  classify:{title:'Clasificación Inteligente IA',sub:'Mejores prácticas · Etapa 2',
+    stats:[{n:'20-30%',l:'Más rápido con scoring predictivo vs. métodos manuales'},{n:'35-40%',l:'Tasa MQL-to-SQL en empresas top (vs. 13-21% promedio)'}],
+    items:[
+      {t:'Scoring multidimensional',d:'Combinar datos explícitos (empresa, sector, país, presupuesto) con comportamiento implícito (páginas visitadas, contenido descargado). No usar solo uno de los dos.'},
+      {t:'Scores contextuales por UEN',d:'Definir un score específico por unidad de negocio. Un lead de Distribución Urbana tiene criterios de calidad distintos a uno de Almacenamiento.'},
+      {t:'Clasificación multi-empresa',d:'El agente debe identificar a qué empresa del grupo pertenece ANTES de enrutar. Un lead mal clasificado genera doble trabajo y fricción operativa.'},
+      {t:'Umbral Big Deal automático (QCO)',d:'El filtro de $100M COP/mes se activa automáticamente para Quick Colombia. Si no hay dato suficiente, escalar al Manager para calificación manual.'},
+      {t:'Descalificación explícita',d:'Si el scoring indica que no cumple criterios mínimos, descalificar y notificar al lead de forma respetuosa. Ahorrar tiempo de ambas partes es una fortaleza.'}
+    ]},
+  bigdeal:{title:'Filtro Big Deal / Licitaciones',sub:'Solo Quick Colombia · Etapa 3',
+    stats:[{n:'$100M',l:'Umbral mensual COP para activar ruta VP Comercial'},{n:'<15 min',l:'SLA de primer contacto VP Comercial en Big Deals'}],
+    items:[
+      {t:'Criterios de Big Deal (QCO)',d:'Valor mensual >$100M COP · Contrato marco multi-anual · Proceso formal de licitación · Múltiples servicios o UENs involucradas · Cliente estratégico.'},
+      {t:'Escalamiento inmediato a VP',d:'La VP Comercial recibe notificación en tiempo real con resumen completo: empresa prospecto, servicio, volumen estimado, contacto clave. Primer contacto en <15 minutos.'},
+      {t:'Demás empresas: sin filtro',d:'Para Quick USA, México, Chile, Clean, SmartQuick y Belavenko, el Country Manager o Gerente gestiona directamente el 100% de sus leads, sin distinción de valor. El flujo va directo al enrutamiento.'},
+      {t:'Registro paralelo en CRM',d:'Los Big Deals deben registrarse en CRM con etiqueta especial para reporting diferenciado y visibilidad de la dirección del grupo.'},
+      {t:'Gestión diferenciada',d:'Big Deals requieren: reunión de kick-off con equipo senior, propuesta por equipo multidisciplinar, revisión VP antes del envío y seguimiento semanal activo.'}
+    ]},
+  notify:{title:'Notificación en Tiempo Real — Etapa 5',sub:'Manager recibe lead · Botones de acción · Velocidad crítica',
+    stats:[{n:'100×',l:'Mejor conversión: contacto en 5 min vs. 30 min'},{n:'391%',l:'Mejora: contacto en <1 min vs. >5 min'}],
+    items:[
+      {t:'El dato más importante del sistema',d:'Empresas que contactan leads en <5 minutos tienen 100× más probabilidad de convertirlos. La automatización del sistema elimina esta fricción: el Manager recibe la notificación en <5 min, decide en <2 min y el Director acepta en <3 min. Total: lead-to-contacto en <10 min.'},
+      {t:'Notificación accionable con botones de decisión',d:'El mensaje de WhatsApp al Manager debe incluir: nombre · empresa · servicio · teléfono con click-to-call · score · valor estimado. Y dos botones de acción: [📲 Me asigno el lead] [👤 Asignar a Director Comercial]. El Manager debe poder actuar en 30 segundos.'},
+      {t:'KPI de tiempo de decisión del Manager',d:'El sistema registra el timestamp de recepción de la notificación y el timestamp de la decisión. Si el Manager no actúa en 2 minutos, el sistema envía un segundo aviso. En 5 minutos escala automáticamente al backup designado. Este tiempo es KPI de evaluación del Manager.'},
+      {t:'WhatsApp Business API oficial',d:'Usar exclusivamente la API oficial de Meta. Soluciones no oficiales arriesgan el bloqueo del número corporativo sin aviso, paralizando la operación comercial de todo el grupo.'},
+      {t:'Cobertura 24/7 con bot',d:'Para leads fuera de horario laboral, el bot gestiona el contacto inicial y agenda para el día hábil siguiente. La notificación al Manager llega igualmente, pero el tiempo de decisión corre desde la apertura del horario laboral.'}
+    ]},
+  assign:{title:'Decisión de Asignación — Etapa 5B',sub:'Manager actúa desde WhatsApp · Envío simultáneo a Director + CRM · Aplica a todas las empresas',
+    stats:[{n:'<2 min',l:'KPI de decisión del Manager desde recepción de WhatsApp'},{n:'<3 min',l:'KPI de aceptación del Director Comercial desde la asignación'}],
+    items:[
+      {t:'Decisión única: asignarse o delegar',d:'El Manager tiene exactamente dos opciones al recibir un lead: (A) Asignarse el lead y contactar directamente, o (B) Asignarlo a un Director Comercial de su equipo. No hay opciones intermedias. La decisión debe ser inmediata y queda registrada en el CRM con timestamp.'},
+      {t:'Envío simultáneo: WhatsApp + CRM en tiempo real',d:'Al elegir "Asignar a Director Comercial", el sistema ejecuta dos acciones en paralelo en menos de 3 segundos: (1) WhatsApp al Director con todos los datos del lead, historial del canal y resumen IA, (2) CRM actualizado con el nuevo responsable asignado, el Manager asignador y los timestamps de cada acción.'},
+      {t:'El Director debe ACEPTAR el lead (no solo recibirlo)',d:'Recibir no es aceptar. El Director debe confirmar la aceptación con un clic en el mensaje de WhatsApp. Esta aceptación: (1) registra el timestamp en CRM, (2) activa el bot de contactabilidad hacia el prospecto, (3) inicia el proceso de agendamiento automático. Sin aceptación, el sistema escala al backup en 3 minutos.'},
+      {t:'KPI de disciplina de asignación',d:'El sistema genera automáticamente reportes semanales de: tiempo promedio Manager→decisión, tiempo Director→aceptación, % de leads que cumplen SLA (<2 min / <3 min), y % de leads que escalan a backup. Estos son KPIs de evaluación de Managers y Directores Comerciales.'},
+      {t:'Regla para leads fuera de horario laboral',d:'Si el lead llega fuera del horario hábil, el bot gestiona el primer contacto al prospecto. El timer de decisión del Manager inicia al comienzo del siguiente turno laboral. Sin embargo, Managers con cultura de alta performance revisan sus notificaciones y actúan incluso fuera de horario.'}
+    ]},
+  contact:{title:'Contacto Inicial — Etapa 6',sub:'Director Comercial acepta · Bot activo · CRM sincronizado bidireccional',
+    stats:[{n:'391%',l:'Mejora de conversión: contacto en <1 min vs. >5 min'},{n:'40%',l:'Mejora en calidad del match con enrutamiento inteligente'}],
+    items:[
+      {t:'La aceptación dispara la automatización completa',d:'En el momento en que el Director Comercial acepta el lead, el sistema inicia automáticamente: (1) Mensaje de bienvenida personalizado al prospecto vía WhatsApp · (2) Prep brief al Director con datos del prospecto, guión de apertura sugerido y preguntas de calificación · (3) CRM actualizado con estado "En contacto inicial".'},
+      {t:'Mensaje de bienvenida personalizado al prospecto',d:'El bot usa el nombre del prospecto, referencia el servicio específico consultado y la empresa del grupo correcta. Un mensaje genérico genera desconfianza. La personalización aumenta la tasa de respuesta en 60%. El mensaje incluye opción de agendar reunión directamente.'},
+      {t:'Guión de apertura personalizado por IA',d:'El Director recibe en su WhatsApp un guión de apertura de 3 líneas generado por IA: "Hola [Nombre], soy [Director] de Quick. Vi que estás buscando [servicio] para [empresa]... ¿Tienes 10 minutos ahora o cuándo sería el mejor momento?". Personalización → +60% en tasa de respuesta.'},
+      {t:'Lead-to-account matching',d:'Si el prospecto pertenece a una empresa ya cliente del grupo (en otra UEN o país), enrutar al Account Executive de esa cuenta. Es cross-sell/upsell, no lead nuevo. El sistema detecta esto automáticamente por dominio del correo.'},
+      {t:'Actualización bidireccional del CRM',d:'Cada acción del Director en WhatsApp (mensaje enviado, respuesta recibida, cita agendada) se registra automáticamente en CRM. Ningún ejecutivo debe ingresar datos manualmente. El 80% de la data de CRM se deteriora cuando depende de ingreso manual.'}
+    ]},
+  schedule:{title:'Agendamiento Automático',sub:'Mejores prácticas · Etapa 7',
+    stats:[{n:'15 min',l:'Ahorrados por reunión vs. agendamiento manual'},{n:'12.5 hrs',l:'Liberadas al mes por ejecutivo (50 reuniones × 15 min)'}],
+    items:[
+      {t:'Integración real con calendario',d:'El sistema debe bloquear la cita directamente en Google Calendar o Outlook — no solo "sugerir disponibilidad". La confirmación es inmediata y automática.'},
+      {t:'Routing de agenda inteligente',d:'Verificar que el ejecutivo no tenga back-to-back meetings y tenga al menos 15 minutos de preparación previa a la reunión de ventas.'},
+      {t:'Confirmación y recordatorios automáticos',d:'Confirmación en <60 segundos con link de videollamada, nombre del ejecutivo y tema. Recordatorio 24h antes y 1h antes.'},
+      {t:'Prep brief automático al ejecutivo',d:'Antes de la reunión, el sistema envía al ejecutivo: datos del prospecto, historial, servicio de interés, preguntas sugeridas basadas en el perfil.'},
+      {t:'Manejo de no-shows',d:'Si el prospecto no se conecta en 5 minutos, el sistema envía WhatsApp ofreciendo reagendar. El 40% de no-shows son recuperables con seguimiento inmediato.'}
+    ]},
+  meeting:{title:'Reunión Comercial — Etapa 8',sub:'📹 Virtual (IA automática) · 🤝 Presencial (recordatorios + exigencia) · Framework MEDDIC',
+    stats:[{n:'30-59%',l:'SQL-to-Opportunity en empresas top con MEDDIC'},{n:'<2h',l:'KPI: info de reunión presencial cargada en CRM'}],
+    items:[
+      {t:'📹 Modalidad Virtual — Todo automático',d:'La plataforma detecta el inicio de la reunión → grabación automática con consentimiento previo → transcripción en tiempo real con IA → al finalizar: la IA genera en <15 min el resumen estructurado, actualiza el CRM con compromisos y próximos pasos, y activa las tareas del equipo. El Director no necesita tomar ni una sola nota.'},
+      {t:'🤝 Modalidad Presencial — Exigencia del sistema',d:'No existe registro automático en la reunión presencial. El sistema compensa con 3 recordatorios escalonados vía WhatsApp: ① "Recuerda cargar los compromisos de tu reunión" (30 min post-reunión) · ② Segundo recordatorio (2 horas) · ③ Alerta de incumplimiento (24 horas). Si no carga la info en 24h: escala al Manager y se registra como falla en el KPI de Disciplina de CRM del ejecutivo.'},
+      {t:'Los 5 puntos obligatorios en reunión presencial',d:'El Director o Manager debe cargar en CRM o vía WhatsApp bot: (1) Necesidad principal y dolor identificado · (2) Volumen estimado de la operación · (3) Timeline de decisión del cliente · (4) Compromisos adquiridos (quién hace qué y cuándo) · (5) Contactos adicionales identificados (Champion, Economic Buyer). Estos 5 datos activan el flujo de propuesta.'},
+      {t:'Framework MEDDIC — Ambas modalidades',d:'Métricas: ¿qué impacto cuantificable busca? · Economic Buyer: ¿quién aprueba el presupuesto? · Decision Criteria: ¿qué criterios usa para evaluar? · Decision Process: ¿cuántos pasos tiene la aprobación? · Identify Pain: ¿cuál es el dolor real y medible? · Champion: ¿quién apoya internamente la compra?'},
+      {t:'Economic modeling personalizado',d:'En logística B2B el diferenciador clave es mostrar números reales. Preparar modelo de ROI específico: "Con nuestro servicio, su costo se reduce de X a Y". Un número concreto convierte 3× más que una promesa genérica.'},
+      {t:'KPI de disciplina de CRM post-reunión',d:'El % de reuniones con info cargada en <2h es un KPI de desempeño del Director Comercial que se reporta semanalmente. Un ejecutivo que no carga la info de sus reuniones en tiempo no puede ser evaluado correctamente por el sistema, su Manager ni la dirección.'}
+    ]},
+  postmeeting:{title:'Resumen Post-Reunión con IA',sub:'Mejores prácticas · Etapa 9',
+    stats:[{n:'<60 min',l:'Meta: follow-up al prospecto post-reunión'},{n:'+20%',l:'Mejora en conversión con follow-up en <1 hora'}],
+    items:[
+      {t:'Estructura del resumen IA',d:'(1) Comprensión del problema · (2) Solución propuesta y fit · (3) Compromisos de cada parte · (4) Próximos pasos con fechas · (5) Score actualizado de la oportunidad basado en la conversación.'},
+      {t:'CRM actualizado sin acción humana',d:'Ningún ejecutivo debe actualizar el CRM manualmente post-reunión. El sistema lo hace automáticamente. El 80% de la data de CRM se deteriora cuando depende de ingreso manual.'},
+      {t:'Activación de tareas internas',d:'El resumen activa automáticamente: tarea al equipo de propuestas con deadline, alerta si requiere input de operaciones o pricing, notificación al manager.'},
+      {t:'Email de seguimiento personalizado',d:'En <60 minutos post-reunión: gracias, recap de puntos clave, confirmación de próximos pasos y fecha estimada de propuesta. La IA lo genera; el ejecutivo lo revisa en 30 segundos.'},
+      {t:'Análisis de señales de compra',d:'La IA analiza transcripción para detectar: presupuesto aprobado, timeline urgente, competidores evaluados, decisión próxima. Actualiza el score en tiempo real.'}
+    ]},
+  proposal:{title:'Generación de Propuesta con IA',sub:'Mejores prácticas · Etapa 10',
+    stats:[{n:'+57%',l:'Conversión con propuestas personalizadas vs. genéricas'},{n:'5 min',l:'Revisión ejecutiva vs. 45 min escribir desde cero'}],
+    items:[
+      {t:'IA genera, humano refina',d:'No que la IA genere la propuesta completa (riesgo de inexactitud) ni que el humano la escriba desde cero (lento). IA genera borrador en 2 min → ejecutivo revisa y ajusta en 5 min → calidad consistente con velocidad óptima.'},
+      {t:'Estructura de propuesta ganadora',d:'(1) Comprensión específica del problema · (2) Solución mapeada a requisitos de la reunión · (3) Caso de éxito similar · (4) Pricing transparente · (5) Timeline realista · (6) Próximos pasos claros.'},
+      {t:'Personalización desde el CRM',d:'La IA se alimenta de: notas de reunión, historial, tipo de empresa, volúmenes discutidos, competidores mencionados y plantillas corporativas de Quick.'},
+      {t:'Tracking de visualización',d:'Notificación cuando el cliente abre la propuesta, cuánto tiempo pasó en cada sección y si la compartió internamente. Si pasó 5 min en pricing: momento exacto para follow-up.'},
+      {t:'Separar alcance técnico de precios',d:'Separar la propuesta técnica (alcance, metodología, timeline) de la económica (precios). Permite ajustar pricing sin reescribir toda la propuesta y facilita la negociación.'}
+    ]},
+  send:{title:'Revisión y Envío Formal',sub:'Mejores prácticas · Etapa 11',
+    stats:[{n:'22-30%',l:'Opportunity-to-close promedio B2B (meta Quick: >30%)'},{n:'+25%',l:'Mejora en cierre con Digital Sales Rooms'}],
+    items:[
+      {t:'Flujo de aprobación digital',d:'Manager revisa → aprueba con un clic → el sistema envía automáticamente. Sin impresión ni email manual. El proceso completo debe ser digital y trazable.'},
+      {t:'Digital Sales Room',d:'Espacio colaborativo compartido donde cliente y ejecutivo comentan, ajustan términos y alinean scope. Las empresas que usan este modelo reportan +25% en tasa de cierre.'},
+      {t:'Firma digital',d:'Integrar firma electrónica directamente en el flujo. El prospecto acepta y firma desde el mismo documento digital, sin impresión. Cada día de fricción en firma reduce conversión.'},
+      {t:'Notificación al abrir',d:'Cuando el prospecto abre la propuesta, el ejecutivo recibe notificación inmediata. Momento ideal para WhatsApp: "¿Tienes alguna pregunta?". La ventana de atención es de minutos.'},
+      {t:'Versionamiento y control de cambios',d:'Versiones numeradas en el CRM. Si el cliente solicita cambios, registrar qué cambió, quién lo aprobó y cuándo. Protege a Quick ante malentendidos.'}
+    ]},
+  followup:{title:'Seguimiento Activo y Trazabilidad',sub:'Mejores prácticas · Etapa 12',
+    stats:[{n:'2×',l:'Tasa de respuesta con secuencia 5 toques vs. un solo email'},{n:'42h',l:'Tiempo de respuesta promedio en la industria — Quick debe estar en <5 min'}],
+    items:[
+      {t:'Secuencia multi-canal de 5 toques',d:'Día 1: Email → Día 3: WhatsApp → Día 5: LinkedIn DM → Día 7: Email con contenido de valor → Día 10: Llamada programada. Esta secuencia dobla la tasa de respuesta.'},
+      {t:'Follow-up basado en comportamiento',d:'Si abrió la propuesta 3 veces pero no respondió: señal de proceso interno de aprobación. Follow-up suave: "¿Puedo ayudarte a preparar la presentación para tu equipo?".'},
+      {t:'Dashboard ejecutivo en tiempo real',d:'Visibilidad completa del pipeline: leads por etapa, tiempo en cada fase, conversión por ejecutivo, UEN y empresa del grupo. Permite intervenciones tempranas.'},
+      {t:'Forecasting predictivo',d:'La IA predice con 70-80% de precisión qué oportunidades cerrarán y en qué período. Permite planificar capacidad operativa con anticipación.'},
+      {t:'Cierre del loop con marketing',d:'Cada lead que avanza o se pierde retroalimenta el sistema de marketing. ¿Qué campañas generan leads que más cierran? ¿Qué keywords traen prospectos de mayor valor?'}
+    ]},
+  qco:{title:'Quick Colombia — Routing detallado',sub:'4 UENs + Filtro VP Comercial (Big Deals)',
+    stats:[{n:'4 UENs',l:'TCM · Distribución · Última Milla · Almacenamiento'},{n:'>$100M',l:'COP/mes → VP Comercial directamente'}],
+    items:[
+      {t:'Transporte de Carga Masiva',d:'Servicios: Carga Masiva Nacional · Transporte Internacional Andino · Cargas Especiales y/o de Proyecto · Tránsito Aduanero (DTA) · ITR. Manager TCM recibe lead y reasigna a su equipo comercial.'},
+      {t:'Distribución Urbana',d:'Servicios: Consumo Masivo · Retail · Farmacéutico y Health Care · Venta Directa. Manager DU notificado. Criterio clave: cobertura geográfica y frecuencia de distribución.'},
+      {t:'Logística de Última Milla',d:'Servicios: Mensajería Corporativa · Domicilios · Fulfillment · Cross Docking · Paqueteo · Entregas Express. Manager UM notificado. Criterio clave: volumen diario de entregas y cobertura de zonas.'},
+      {t:'Almacenamiento',d:'Servicios: Fulfillment · Storage · 3PL. Manager ALM notificado. Criterio clave: metraje cúbico necesario y tipo de mercancía.'},
+      {t:'Regla Big Deal → VP Comercial',d:'Si el lead presenta volumen >$100M COP/mes, tipo licitación o múltiples UENs: escalar directamente a la VP Comercial con resumen ejecutivo. Los Managers de UEN son notificados como copia.'}
+    ]},
+  qusa:{title:'Quick USA',sub:'Country Manager · South Florida',
+    stats:[{n:'1 CM',l:'Country Manager gestiona todos los servicios'},{n:'3 líneas',l:'South Florida Carrier · Domestic Freight · Warehouse'}],
+    items:[
+      {t:'South Florida Carrier',d:'Distribution, Airport Transfer y Dedicated Truck. Leads de logística local en South Florida, transfers aeropuerto y camiones dedicados.'},
+      {t:'Domestic Freight',d:'FTL (Full Truck Load), LTL (Less Than Truck Load) y Drayage. Leads de carga nacional y transporte de puertos.'},
+      {t:'Warehouse',d:'Fulfillment, Storage y 3PL. Leads de almacenamiento, e-commerce fulfillment y logística tercerizada.'},
+      {t:'Idioma y zona horaria',d:'El bot y las notificaciones para USA operan en inglés. Zona horaria EST/EDT. Gestión de leads fuera de horario laboral con auto-respuesta en inglés.'},
+      {t:'Sin filtro Big Deal',d:'El Country Manager gestiona directamente el 100% de sus leads, independientemente del valor del negocio. No aplica el filtro de $100M COP/mes.'}
+    ]},
+  qmex:{title:'Quick México',sub:'Country Manager · Operaciones logísticas',
+    stats:[{n:'1 CM',l:'Country Manager · todos los servicios'},{n:'4 servicios',l:'Carga · Distribución · Almacenamiento · Última Milla'}],
+    items:[
+      {t:'Servicios',d:'Transporte Terrestre de Carga · Distribución · Almacenamiento · Logística Última Milla. El Country Manager México recibe y gestiona directamente todos los leads.'},
+      {t:'Sin filtro Big Deal',d:'El Country Manager gestiona el 100% de sus leads sin distinción de valor. Flujo directo desde clasificación al CM.'},
+      {t:'Idioma y adaptación local',d:'Bot y notificaciones en español mexicano. Adaptar terminología local: "camión", "CEDIS" para centros de distribución, regulaciones SCT.'},
+      {t:'Zona horaria',d:'CST/CDT. Considerar diferencia horaria con Colombia para el agendamiento automático y cobertura de leads nocturnos.'}
+    ]},
+  qchl:{title:'Quick Chile',sub:'Country Manager · Operaciones logísticas',
+    stats:[{n:'1 CM',l:'Country Manager · todos los servicios'},{n:'5 servicios',l:'Carga · Distribución · Almacenamiento · Última Milla · Mensajería'}],
+    items:[
+      {t:'Servicios',d:'Transporte Terrestre de Carga · Distribución Urbana y Nacional · Almacenamiento · Logística Última Milla · Mensajería. El Country Manager Chile gestiona directamente todos los leads.'},
+      {t:'Sin filtro Big Deal',d:'El Country Manager gestiona el 100% de sus leads sin distinción de valor.'},
+      {t:'Diferenciador: Mensajería',d:'Chile tiene el servicio de Mensajería que no está en otros países. El clasificador lo identifica específicamente y lo diferencia de Última Milla.'},
+      {t:'Zona horaria',d:'CLT/CLST (UTC-3/-4). Coordinar correctamente los horarios de agendamiento automático con la diferencia respecto a Colombia.'}
+    ]},
+  qclean:{title:'Quick Clean',sub:'Manager único · Corporativo y Hogar',
+    stats:[{n:'1 Manager',l:'Gestiona todos los servicios y equipo comercial'},{n:'2 líneas',l:'Corporativo · Hogar'}],
+    items:[
+      {t:'Corporativo (Mantenimiento, Proyectos Especiales, Aseo y Cafetería)',d:'Servicios para empresas y organizaciones. Ciclos de venta de 2-4 meses con visita técnica previa a propuesta. El Manager gestiona directamente todos los leads corporativos sin filtro Big Deal.'},
+      {t:'Calificación Corporativo',d:'Criterios clave: m² a atender, frecuencia del servicio, número de personas en instalación, tipo de instalación (oficina, bodega, planta industrial), presupuesto anual estimado.'},
+      {t:'Hogar (Servicios residenciales)',d:'Servicios para clientes particulares y viviendas. Ciclos más cortos (2-3 semanas). Énfasis en rapidez de respuesta y confianza debido a acceso a espacios privados.'},
+      {t:'Calificación Hogar',d:'Criterios clave: ubicación/zona, tipo de inmueble, frecuencia deseada del servicio, presupuesto máximo, disponibilidad del cliente para seguimiento.'}
+    ]},
+  smart:{title:'SmartQuick',sub:'Manager único · Productos IA y Automatización',
+    stats:[{n:'1 Manager',l:'Gestiona todos los servicios y equipo'},{n:'4 productos IA',l:'AI Logistics · AI Tower · AI Workforce · AI Studio'}],
+    items:[
+      {t:'AI Logistics — TMS con Inteligencia Artificial',d:'Sistema de gestión de transporte potenciado con IA para optimizar rutas, costos y tiempos. Ideal para empresas logísticas en transformación digital. Calificación: madurez digital, volumen de envíos anuales, presupuesto de tecnología.'},
+      {t:'AI Tower — Torre de Control con IA',d:'Plataforma centralizada de monitoreo y control de operaciones con analytics avanzado. Para gerentes de operaciones que necesitan visibilidad en tiempo real. Calificación: tamaño de operación, KPIs actuales, equipo técnico disponible.'},
+      {t:'AI Workforce — Asignación de Recursos con IA',d:'Sistema inteligente de asignación de personal y recursos humanos. Para empresas con equipos distribuidos. Calificación: número de empleados, localización geográfica, complejidad de asignación.'},
+      {t:'AI Studio — Agentes IA a Medida',d:'Desarrollo de agentes de IA personalizados según necesidades específicas del cliente. Servicio consultivo de alto valor. Calificación: tipo de proceso a automatizar, presupuesto, visión de transformación del cliente.'}
+    ]},
+  bel:{title:'Belavenko',sub:'Manager único · 3 Líneas de Servicios Jurídicos',
+    stats:[{n:'1 Manager',l:'Gestiona todos los servicios y equipo'},{n:'Legal B2B',l:'Alto valor · Confidencialidad crítica'}],
+    items:[
+      {t:'Asesoría UGPP (Unidad de Gestión de Personas y Políticas)',d:'Asesoramiento muy específico en regulación laboral y compliance corporativo. Leads altamente calificados: gerentes de RRHH o administración de empresas medianas y grandes. Requiere comprensión profunda de regulaciones locales.'},
+      {t:'Servicios Jurídicos (Litigio, Corporativo, Contractual)',d:'Servicios tradicionales de abogacía empresarial. Calificación: tipo de asunto legal, cuantía del litigio, complejidad contractual, industria del prospecto. Ciclos extensos por naturaleza de servicios legales.'},
+      {t:'Régimen de Insolvencia (Negociación de Deudas, Liquidación Patrimonial)',d:'Servicios especializados para empresas en dificultad financiera. Requiere máxima sensibilidad: el prospecto está en crisis. Calificación: estado financiero estimado, número de acreedores, objetivo del cliente (negociación vs. liquidación).'},
+      {t:'Confidencialidad y ciclo relacional crítico',d:'Los datos de leads de Belavenko son extremadamente sensibles. Acceso restringido, sin compartir con otras empresas del grupo. El bot gestiona contacto inicial pero la relación debe humanizarse rápidamente con atención personalizada del Manager.'}
+    ]}
+};
+
+// ── PANEL FUNCTIONS ──
+function openPanel(key){
+  const d=panels[key]; if(!d) return;
+  document.getElementById('panel-title').innerHTML=d.title;
+  document.getElementById('panel-sub').innerHTML=d.sub;
+  let h='';
+
+  // ── CHANNEL PANEL FORMAT ──────────────────────────────────
+  if(d.channel){
+    const c=d.color||'#0284C7';
+    // Header bar: Conv / CPL / Priority
+    h+=`<div style="display:flex;gap:8px;flex-wrap:wrap;margin-bottom:14px;">
+      <div style="flex:1;min-width:90px;background:${c}18;border:1px solid ${c}44;border-radius:10px;padding:8px 12px;text-align:center;">
+        <div style="font-size:.65rem;color:#64748b;font-weight:700;text-transform:uppercase;letter-spacing:.4px;">Conversión</div>
+        <div style="font-size:1.1rem;font-weight:800;color:${c}">${d.conv}</div>
+      </div>
+      <div style="flex:1;min-width:90px;background:#F0FDF418;border:1px solid #86EFAC;border-radius:10px;padding:8px 12px;text-align:center;">
+        <div style="font-size:.65rem;color:#64748b;font-weight:700;text-transform:uppercase;letter-spacing:.4px;">CPL Promedio</div>
+        <div style="font-size:1.1rem;font-weight:800;color:#16A34A">${d.cpl}</div>
+      </div>
+      <div style="flex:1;min-width:90px;background:#FFFBEB;border:1px solid #FDE68A;border-radius:10px;padding:8px 12px;text-align:center;">
+        <div style="font-size:.65rem;color:#64748b;font-weight:700;text-transform:uppercase;letter-spacing:.4px;">Prioridad</div>
+        <div style="font-size:1.0rem;font-weight:800;color:#D97706">${d.priority}</div>
+      </div>
+    </div>`;
+
+    // Steps
+    if(d.steps && d.steps.length){
+      h+='<div class="section-title">🔢 Proceso Paso a Paso</div>';
+      d.steps.forEach(s=>{
+        const sc=s.c||c;
+        h+=`<div class="proc-step">
+          <div class="proc-num" style="background:${sc}">${s.n}</div>
+          <div class="proc-text"><strong>${s.t}</strong>${s.d}</div>
+        </div>`;
+      });
+    }
+
+    // KPIs
+    if(d.kpis && d.kpis.length){
+      h+='<div class="section-title">📊 KPIs Clave</div><div class="kpi-row">';
+      d.kpis.forEach(k=>{h+=`<div class="kpi-pill">${k}</div>`;});
+      h+='</div>';
+    }
+
+    // Best Practices
+    if(d.bps && d.bps.length){
+      h+='<div class="section-title">✅ Mejores Prácticas</div>';
+      d.bps.forEach((it,i)=>{h+=`<div class="bp-item"><div class="bp-n">${i+1}</div><div class="bp-t"><strong>${it.t}</strong>${it.d}</div></div>`;});
+    }
+
+    // Common Errors
+    if(d.errors && d.errors.length){
+      h+='<div class="section-title">⚠️ Errores Frecuentes</div>';
+      d.errors.forEach(e=>{h+=`<div class="err-item">${e}</div>`;});
+    }
+
+  // ── STANDARD PANEL FORMAT ─────────────────────────────────
+  } else {
+    if(d.stats){
+      h+='<div class="section-title">📊 Benchmarks</div>';
+      d.stats.forEach(s=>{h+=`<div class="stat"><div class="stat-n">${s.n}</div><div class="stat-l">${s.l}</div></div>`;});
+    }
+    h+='<div class="section-title">✅ Mejores Prácticas</div>';
+    if(d.items) d.items.forEach((it,i)=>{h+=`<div class="bp-item"><div class="bp-n">${i+1}</div><div class="bp-t"><strong>${it.t}</strong>${it.d}</div></div>`;});
+  }
+
+  document.getElementById('panel-body').innerHTML=h;
+  document.getElementById('panel').classList.add('on');
+  document.getElementById('overlay').classList.add('on');
+}
+function closePanel(){
+  document.getElementById('panel').classList.remove('on');
+  document.getElementById('overlay').classList.remove('on');
+}
+
+// ── COMPANY NAMES ──
+const companyMap={qco:'c-qco',qusa:'c-qusa',qmex:'c-qmex',qchl:'c-qchl',qclean:'c-qclean',smart:'c-smart',bel:'c-bel'};
+const companyNames={qco:'🇨🇴 Quick Colombia',qusa:'🇺🇸 Quick USA',qmex:'🇲🇽 Quick México',qchl:'🇨🇱 Quick Chile',qclean:'🧹 Quick Clean',smart:'💡 SmartQuick',bel:'⚖️ Belavenko'};
+const companySubs={
+  qco:'4 UENs · Selecciona una UEN en el sub-menú para ver sus servicios',
+  qusa:'Country Manager · South Florida Carrier · Domestic Freight · Warehouse',
+  qmex:'Country Manager · Transporte · Distribución · Almacenamiento · Última Milla',
+  qchl:'Country Manager · Transporte · Distribución · Almacenamiento · Última Milla · Mensajería',
+  qclean:'Manager · BPO Corporativo · Aseo Corporativo',
+  smart:'Manager · Tecnología · Soluciones Digitales · Innovación',
+  bel:'Manager · Servicios Jurídicos · Compliance'
+};
+
+// ── MAIN FILTER ──
+function filter(key,e){
+  if(e) e.stopPropagation();
+  document.querySelectorAll('.fb').forEach(b=>b.classList.remove('on'));
+  const bigdealSection=document.getElementById('bigdeal-section');
+  const bigdealBanner=document.getElementById('bigdeal-banner');
+  const cgrid=document.getElementById('cgrid');
+  const rtitle=document.getElementById('routing-title');
+  const rsub=document.getElementById('routing-sub');
+  const uenSubmenu=document.getElementById('uen-submenu');
+  const uenDetail=document.getElementById('uen-detail');
+
+  // Reset UEN detail
+  hideAllUEN();
+  uenDetail.classList.remove('visible');
+  document.querySelectorAll('.uen-btn').forEach(b=>b.classList.remove('on'));
+
+  if(key==='all'){
+    document.querySelector('.fb.all').classList.add('on');
+    document.querySelectorAll('.ccard').forEach(c=>{c.style.display='';c.classList.remove('lit');});
+    cgrid.style.gridTemplateColumns='';
+    bigdealSection.style.display='';
+    bigdealBanner.style.display='';
+    rtitle.innerHTML='🏢 Enrutamiento por Empresa y Unidad de Negocio';
+    rsub.textContent='El agente IA asigna el lead al responsable correcto en tiempo real · Actualización bidireccional del CRM';
+    uenSubmenu.style.display='none';
+  } else {
+    if(e) e.target.classList.add('on');
+    document.querySelectorAll('.ccard').forEach(c=>{c.style.display='none';c.classList.remove('lit');});
+    const id=companyMap[key];
+    if(id){const card=document.getElementById(id);if(card){card.style.display='';card.classList.add('lit');}}
+    cgrid.style.gridTemplateColumns='1fr';
+    if(key==='qco'){
+      bigdealSection.style.display='';
+      bigdealBanner.style.display='';
+      uenSubmenu.style.display='block';
+    } else {
+      bigdealSection.style.display='none';
+      bigdealBanner.style.display='none';
+      uenSubmenu.style.display='none';
+    }
+    rtitle.innerHTML='🏢 Enrutamiento — '+companyNames[key];
+    rsub.textContent=companySubs[key]||'Lead asignado directamente al responsable · CRM actualizado en tiempo real';
+  }
+}
+
+// ── UEN SUB-FILTER ──
+function filterUEN(key,e){
+  if(e) e.stopPropagation();
+  document.querySelectorAll('.uen-btn').forEach(b=>b.classList.remove('on'));
+  if(e) e.target.classList.add('on');
+  hideAllUEN();
+  const uenDetail=document.getElementById('uen-detail');
+  const rtitle=document.getElementById('routing-title');
+  const rsub=document.getElementById('routing-sub');
+  if(key==='all'){
+    uenDetail.classList.remove('visible');
+    rtitle.innerHTML='🏢 Enrutamiento — 🇨🇴 Quick Colombia';
+    rsub.textContent='4 UENs · Selecciona una UEN en el sub-menú para ver sus servicios';
+    document.getElementById('c-qco').style.display='';
+  } else {
+    const el=document.getElementById('uen-'+key);
+    if(el){
+      el.style.display='block';
+      uenDetail.classList.add('visible');
+      document.getElementById('c-qco').style.display='none';
+    }
+    const names={tcm:'🚛 Transporte de Carga Masiva',dis:'🏙️ Distribución Urbana',ulm:'📦 Logística de Última Milla',alm:'🏭 Almacenamiento'};
+    rtitle.innerHTML='🏢 Quick Colombia — '+(names[key]||key);
+    rsub.textContent='Manager de UEN recibe el lead en WhatsApp y lo reasigna al equipo comercial correspondiente';
+  }
+}
+
+function hideAllUEN(){
+  ['tcm','dis','ulm','alm'].forEach(id=>{
+    const el=document.getElementById('uen-'+id);
+    if(el) el.style.display='none';
+  });
+}
+</script>
+</body>
+</html>
